@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoTraderDAL", "AlgoTraderDAL\AlgoTraderDAL.csproj", "{49B99F76-CA36-47DA-88FC-9BBAA09189C7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgoTrader", "AlgoTrader\AlgoTrader.csproj", "{7A36324F-9959-4D95-A852-AFF80BBADA41}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49B99F76-CA36-47DA-88FC-9BBAA09189C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B99F76-CA36-47DA-88FC-9BBAA09189C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B99F76-CA36-47DA-88FC-9BBAA09189C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B99F76-CA36-47DA-88FC-9BBAA09189C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A36324F-9959-4D95-A852-AFF80BBADA41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A36324F-9959-4D95-A852-AFF80BBADA41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A36324F-9959-4D95-A852-AFF80BBADA41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A36324F-9959-4D95-A852-AFF80BBADA41}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B7941D9C-906E-4BF3-A2AA-86BD1AE1E53F}
+	EndGlobalSection
+EndGlobal
