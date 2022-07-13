@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AlgoTrader
@@ -14,6 +8,8 @@ namespace AlgoTrader
     public partial class frmAlpacaData : Form
 #pragma warning restore IDE1006 // Naming Styles
     {
+        private List<AlgoTraderDAL.Types.OHLC> ohlcData = new List<AlgoTraderDAL.Types.OHLC>();
+
         public frmAlpacaData()
         {
             InitializeComponent();
@@ -27,7 +23,7 @@ namespace AlgoTrader
         private void frmAlpacaData_Load(object sender, EventArgs e)
         {
             this.txtTicker.Text = "SPY";
-            this.dtFrom.Value = DateTime.Now.AddDays(-30);//a month ago
+            this.dtFrom.Value = DateTime.Now.AddDays(-90);//3 months ago
             this.dtTo.Value = DateTime.Now.AddDays(-1); //yesterday
         }
 
@@ -40,10 +36,20 @@ namespace AlgoTrader
         {
             this.Cursor = Cursors.WaitCursor;
             AlgoTraderDAL.AlpacaAPI alpca = AlgoTraderDAL.AlpacaAPI.Instance;
-            List<AlgoTraderDAL.Types.OHLC> results = alpca.Get_TickerData(this.txtTicker.Text, this.dtFrom.Value, this.dtTo.Value);
-            dgResults.DataSource = results;
+            ohlcData = alpca.Get_TickerData(this.txtTicker.Text, this.dtFrom.Value, this.dtTo.Value);
+            dgResults.DataSource = ohlcData;
             dgResults.Update();
+            this.btnChart.Enabled = true;
             this.Cursor = Cursors.Default;
+        }
+
+        private void btnChart_Click(object sender, EventArgs e)
+        {
+            frmChart chart = new frmChart();
+            chart.MdiParent = this.MdiParent;
+            chart.Text = this.txtTicker.Text;
+            chart.LoadOHLC(ohlcData);
+            chart.Show();
         }
     }
 }

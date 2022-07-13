@@ -37,6 +37,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.dtTo = new System.Windows.Forms.DateTimePicker();
             this.dgResults = new System.Windows.Forms.DataGridView();
+            this.btnChart = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
             this.SuspendLayout();
             // 
@@ -119,9 +120,21 @@
             this.dgResults.Size = new System.Drawing.Size(439, 156);
             this.dgResults.TabIndex = 7;
             // 
+            // btnChart
+            // 
+            this.btnChart.Enabled = false;
+            this.btnChart.Location = new System.Drawing.Point(100, 103);
+            this.btnChart.Name = "btnChart";
+            this.btnChart.Size = new System.Drawing.Size(82, 23);
+            this.btnChart.TabIndex = 8;
+            this.btnChart.Text = "Show Chart";
+            this.btnChart.UseVisualStyleBackColor = true;
+            this.btnChart.Click += new System.EventHandler(this.btnChart_Click);
+            // 
             // frmAlpacaData
             // 
             this.ClientSize = new System.Drawing.Size(463, 304);
+            this.Controls.Add(this.btnChart);
             this.Controls.Add(this.dgResults);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.dtTo);
@@ -149,5 +162,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DateTimePicker dtTo;
         private System.Windows.Forms.DataGridView dgResults;
+        private System.Windows.Forms.Button btnChart;
     }
 }
