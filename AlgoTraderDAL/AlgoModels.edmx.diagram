@@ -5,7 +5,7 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="63b02b0f552f4c78876351eb0842bbcd" Name="Diagram1">
-        <EntityTypeShape EntityType="AlgoTraderModel.TDAKey" Width="1.5" PointX="1.625" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="AlgoTraderModel.AlpacaSetting" Width="1.5" PointX="0.625" PointY="0.5" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

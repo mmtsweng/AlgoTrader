@@ -24,7 +24,7 @@ namespace AlgoTraderDAL
         {
             throw new UnintentionalCodeFirstException();
         }
-    
-        public virtual DbSet<TDAKey> TDAKeys { get; set; }
+           
+        public virtual DbSet<AlpacaSetting> AlpacaSettings { get; set; }
     }
 }
