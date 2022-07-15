@@ -38,6 +38,7 @@
             this.dtTo = new System.Windows.Forms.DateTimePicker();
             this.dgResults = new System.Windows.Forms.DataGridView();
             this.btnChart = new System.Windows.Forms.Button();
+            this.cmdBacktest = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
             this.SuspendLayout();
             // 
@@ -117,7 +118,7 @@
             this.dgResults.Location = new System.Drawing.Point(12, 136);
             this.dgResults.Name = "dgResults";
             this.dgResults.RowTemplate.Height = 25;
-            this.dgResults.Size = new System.Drawing.Size(439, 156);
+            this.dgResults.Size = new System.Drawing.Size(685, 285);
             this.dgResults.TabIndex = 7;
             // 
             // btnChart
@@ -131,9 +132,22 @@
             this.btnChart.UseVisualStyleBackColor = true;
             this.btnChart.Click += new System.EventHandler(this.btnChart_Click);
             // 
+            // cmdBacktest
+            // 
+            this.cmdBacktest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmdBacktest.Enabled = false;
+            this.cmdBacktest.Location = new System.Drawing.Point(596, 107);
+            this.cmdBacktest.Name = "cmdBacktest";
+            this.cmdBacktest.Size = new System.Drawing.Size(101, 23);
+            this.cmdBacktest.TabIndex = 9;
+            this.cmdBacktest.Text = "Run Backtest";
+            this.cmdBacktest.UseVisualStyleBackColor = true;
+            this.cmdBacktest.Click += new System.EventHandler(this.cmdBacktest_Click);
+            // 
             // frmAlpacaData
             // 
-            this.ClientSize = new System.Drawing.Size(463, 304);
+            this.ClientSize = new System.Drawing.Size(709, 433);
+            this.Controls.Add(this.cmdBacktest);
             this.Controls.Add(this.btnChart);
             this.Controls.Add(this.dgResults);
             this.Controls.Add(this.label3);
@@ -163,5 +177,6 @@
         private System.Windows.Forms.DateTimePicker dtTo;
         private System.Windows.Forms.DataGridView dgResults;
         private System.Windows.Forms.Button btnChart;
+        private System.Windows.Forms.Button cmdBacktest;
     }
 }
