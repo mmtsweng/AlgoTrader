@@ -16,13 +16,18 @@ namespace AlgoTraderDAL.Strategies
         internal TrendlineData openTrend { get; set; }
         internal TrendlineData closeTrend { get; set; }
 
+        public SimpleMomentum()
+        {
+            this.isIntraday = true;
+        }
+
         public override void Init()
         {
             base.Init();
             this.opens = new Queue<decimal>();
             this.closes = new Queue<decimal>();
             this.times = new Queue<decimal>();
-            QueueSize = 4;
+            QueueSize = 3;
         }
 
         public override Trade Next(OHLC ohlc)

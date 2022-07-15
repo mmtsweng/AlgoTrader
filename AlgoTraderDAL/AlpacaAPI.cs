@@ -43,7 +43,8 @@ namespace AlgoTraderDAL
                 var client = Environments.Paper.GetAlpacaDataClient(new SecretKey(this.setting.API_KEY, this.setting.API_SECRET));
                 try
                 {
-                    var page = await client.ListHistoricalBarsAsync(new HistoricalBarsRequest(ticker, from, to, btf)).ConfigureAwait(false);
+                    var req = new HistoricalBarsRequest(ticker, from, to, btf).WithPageSize(9000);
+                    var page = await client.ListHistoricalBarsAsync(req).ConfigureAwait(false);
                     foreach (var bar in page.Items)
                     {
                         OHLC ohlc = new OHLC();

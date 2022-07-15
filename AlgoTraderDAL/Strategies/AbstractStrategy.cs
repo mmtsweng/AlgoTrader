@@ -10,8 +10,14 @@ namespace AlgoTraderDAL.Strategies
     public class AbstractStrategy : IStrategy
     {
         public bool canOpenMultiplePositons { get; set; }
+        public bool isIntraday { get; set; }
         public int openPostions { get; set; }
         public Analytics analytics { get; set; }
+
+        public AbstractStrategy()
+        {
+            this.isIntraday = false;
+        }
 
         public virtual bool BuySignal(OHLC ohlc)
         {

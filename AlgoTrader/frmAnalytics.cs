@@ -69,16 +69,19 @@ namespace AlgoTrader
 
             double[] buytimes = backtest.portfolio.trades.Where(x => x.side == AlgoTraderDAL.TradeSide.BUY).Select(x => x.transactionDateTime.ToOADate()).ToArray();
             double[] buys = backtest.portfolio.trades.Where(x => x.side == AlgoTraderDAL.TradeSide.BUY).Select(x => (double)x.actualPrice).ToArray();
-            double[] losingtimes = backtest.analytics.losingTrades.Where(x => x.side == AlgoTraderDAL.TradeSide.SELL).Select(x => x.transactionDateTime.ToOADate()).ToArray();
-            double[] losingsells = backtest.analytics.losingTrades.Where(x => x.side == AlgoTraderDAL.TradeSide.SELL).Select(x => (double)x.actualPrice).ToArray();
-            double[] winningtimes = backtest.analytics.winningTrades.Where(x => x.side == AlgoTraderDAL.TradeSide.SELL).Select(x => x.transactionDateTime.ToOADate()).ToArray();
-            double[] winningsells = backtest.analytics.winningTrades.Where(x => x.side == AlgoTraderDAL.TradeSide.SELL).Select(x => (double)x.actualPrice).ToArray();
+            double[] losingtimes = backtest.analytics.losingTrades.Select(x => x.transactionDateTime.ToOADate()).ToArray();
+            double[] losingsells = backtest.analytics.losingTrades.Select(x => (double)x.actualPrice).ToArray();
+            double[] winningtimes = backtest.analytics.winningTrades.Select(x => x.transactionDateTime.ToOADate()).ToArray();
+            double[] winningsells = backtest.analytics.winningTrades.Select(x => (double)x.actualPrice).ToArray();
 
             var plt = new ScottPlot.Plot(800, 600);
-            var cplot = this.pltResults.Plot.AddOHLCs(prices);
-            cplot.ColorUp = Color.LightGreen;
-            cplot.ColorDown = Color.LightPink;
-            cplot.WickColor = Color.DarkGray;
+            if (!backtest.strategy.isIntraday)
+            {
+                var cplot = this.pltResults.Plot.AddOHLCs(prices);
+                cplot.ColorUp = Color.LightGreen;
+                cplot.ColorDown = Color.LightPink;
+                cplot.WickColor = Color.DarkGray;
+            }
             this.pltResults.Plot.AddScatterPoints(buytimes, buys, Color.DarkBlue,markerShape: ScottPlot.MarkerShape.filledCircle, markerSize:10);
             this.pltResults.Plot.AddScatterPoints(winningtimes, winningsells, Color.DarkGreen, markerShape: ScottPlot.MarkerShape.filledTriangleUp, markerSize: 10);
             this.pltResults.Plot.AddScatterPoints(losingtimes, losingsells, Color.DarkRed, markerShape: ScottPlot.MarkerShape.filledTriangleDown, markerSize: 10);

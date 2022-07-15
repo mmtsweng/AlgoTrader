@@ -32,12 +32,30 @@ namespace AlgoTraderDAL.BackTesting
             this.analytics.startDateTime = (historicalOHLC.OrderByDescending(t => t.Timeframe).LastOrDefault()).Timeframe;
             this.analytics.endDateTime = (historicalOHLC.OrderByDescending(t => t.Timeframe).FirstOrDefault()).Timeframe;
 
-            foreach (OHLC ohlc in this.historicalOHLC)
-            {
-                this.portfolio.UpdatePortfolio(strategy.Next(ohlc));
-            }
 
-            strategy.Close(this.historicalOHLC[this.historicalOHLC.Count-1]);
+            if (this.strategy.isIntraday)
+            {
+                OHLC trackingDay = historicalOHLC[0];
+
+                foreach (OHLC ohlc in this.historicalOHLC)
+                {
+                    if (trackingDay.Timeframe.Date < ohlc.Timeframe.Date)
+                    {
+                        strategy.Close(trackingDay);
+                    }
+                    this.portfolio.UpdatePortfolio(strategy.Next(ohlc));
+                    trackingDay = ohlc;
+                }
+                strategy.Close(this.historicalOHLC[this.historicalOHLC.Count - 1]);
+            }
+            else //Allow Positions to remain open after day closed.
+            {              
+                foreach (OHLC ohlc in this.historicalOHLC)
+                {
+                    this.portfolio.UpdatePortfolio(strategy.Next(ohlc));
+                }
+                strategy.Close(this.historicalOHLC[this.historicalOHLC.Count - 1]);
+            }
 
             this.analytics.AnalyzeTrades(STARTING_ACCOUNT_BALANCE, ref this.portfolio.trades);
         }

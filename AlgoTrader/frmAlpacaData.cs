@@ -12,6 +12,7 @@ namespace AlgoTrader
 #pragma warning restore IDE1006 // Naming Styles
     {
         private List<AlgoTraderDAL.Types.OHLC> ohlcData = new();
+        private IStrategy strategy = new SimpleMomentum();
 
         public frmAlpacaData()
         {
@@ -26,8 +27,18 @@ namespace AlgoTrader
         private void frmAlpacaData_Load(object sender, EventArgs e)
         {
             this.txtTicker.Text = "SPY";
-            this.dtFrom.Value = DateTime.Now.AddDays(-90);//3 months ago
-            this.dtTo.Value = DateTime.Now.AddDays(-1); //yesterday
+            if (this.strategy.isIntraday)
+            {
+                //Intraday Trading, shorten timeframe
+                this.dtFrom.Value = DateTime.Now.AddDays(-3);//3 days ago
+                this.dtTo.Value = DateTime.Now.AddDays(-1); //yesterday
+            }
+            else
+            {
+                //Multiday trading
+                this.dtFrom.Value = DateTime.Now.AddDays(-90);//3 months ago
+                this.dtTo.Value = DateTime.Now.AddDays(-1); //yesterday
+            }
             this.cboPeriod.DataSource = Enum.GetValues(typeof(OHLC_TIMESPAN)); 
         }
 
@@ -40,6 +51,7 @@ namespace AlgoTrader
         {
             this.Cursor = Cursors.WaitCursor;
             AlgoTraderDAL.AlpacaAPI alpca = AlgoTraderDAL.AlpacaAPI.Instance;
+
             ohlcData = alpca.Get_TickerData(this.txtTicker.Text, this.dtFrom.Value, this.dtTo.Value, (OHLC_TIMESPAN)cboPeriod.SelectedValue);
             dgResults.DataSource = ohlcData;
             dgResults.Update();
@@ -70,7 +82,6 @@ namespace AlgoTrader
         private void cmdBacktest_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
-            IStrategy strategy = new SimpleMomentum();
             BackTester backtest = new BackTester(strategy, ohlcData);
 
             frmAnalytics analytics = new frmAnalytics();

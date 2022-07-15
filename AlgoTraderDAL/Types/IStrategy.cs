@@ -9,6 +9,7 @@ namespace AlgoTraderDAL.Types
     public interface IStrategy
     {
         bool canOpenMultiplePositons { get; set; }
+        bool isIntraday { get; set; }
         int openPostions { get; set; }
         Analytics analytics { get; set; }
 
