@@ -33,19 +33,22 @@ namespace AlgoTraderDAL
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        private async Task<List<OHLC>> Get_TickerDataAsync(string ticker, DateTime from, DateTime to)
+        private async Task<List<OHLC>> Get_TickerDataAsync(string ticker, DateTime from, DateTime to, OHLC_TIMESPAN ticks)
         {
+            BarTimeFrame btf = ConvertOHLCToBar(ticks);
+
             List<OHLC> result = new List<OHLC>();
             if ((bool)this.setting.PAPER_TRADING)
             {
                 var client = Environments.Paper.GetAlpacaDataClient(new SecretKey(this.setting.API_KEY, this.setting.API_SECRET));
                 try
                 {
-                    var page = await client.ListHistoricalBarsAsync(new HistoricalBarsRequest(ticker, from, to, BarTimeFrame.Day)).ConfigureAwait(false);
-                    foreach(var bar in page.Items)
+                    var page = await client.ListHistoricalBarsAsync(new HistoricalBarsRequest(ticker, from, to, btf)).ConfigureAwait(false);
+                    foreach (var bar in page.Items)
                     {
                         OHLC ohlc = new OHLC();
                         ohlc.parseIBar(bar);
+                        ohlc.ticks = ticks;
                         result.Add(ohlc);
                     }
                 }
@@ -65,11 +68,38 @@ namespace AlgoTraderDAL
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public List<OHLC> Get_TickerData(string ticker, DateTime from, DateTime to) 
+        public List<OHLC> Get_TickerData(string ticker, DateTime from, DateTime to, OHLC_TIMESPAN ticks) 
         {
             List<OHLC> result = new List<OHLC>();
-            result = Get_TickerDataAsync(ticker, from, to).GetAwaiter().GetResult();
+            result = Get_TickerDataAsync(ticker, from, to, ticks).GetAwaiter().GetResult();
             return result;
+        }
+
+
+        /// <summary>
+        /// Helper method to convert OHLC_TIMESPAN objects to Alpaca Specific BarTimeframes
+        /// </summary>
+        /// <param name="ticks"></param>
+        /// <returns></returns>
+        private static BarTimeFrame ConvertOHLCToBar(OHLC_TIMESPAN ticks)
+        {
+            BarTimeFrame btf = BarTimeFrame.Day;
+            switch (ticks)
+            {
+                case OHLC_TIMESPAN.HOUR:
+                    btf = BarTimeFrame.Hour;
+                    break;
+                case OHLC_TIMESPAN.MINUTE:
+                    btf = BarTimeFrame.Minute;
+                    break;
+                case OHLC_TIMESPAN.DAY:
+                    btf = BarTimeFrame.Day;
+                    break;
+                default:
+                    btf = BarTimeFrame.Day;
+                    break;
+            }
+            return btf;
         }
     }
 }

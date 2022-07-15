@@ -28,6 +28,7 @@ namespace AlgoTrader
             this.txtTicker.Text = "SPY";
             this.dtFrom.Value = DateTime.Now.AddDays(-90);//3 months ago
             this.dtTo.Value = DateTime.Now.AddDays(-1); //yesterday
+            this.cboPeriod.DataSource = Enum.GetValues(typeof(OHLC_TIMESPAN)); 
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace AlgoTrader
         {
             this.Cursor = Cursors.WaitCursor;
             AlgoTraderDAL.AlpacaAPI alpca = AlgoTraderDAL.AlpacaAPI.Instance;
-            ohlcData = alpca.Get_TickerData(this.txtTicker.Text, this.dtFrom.Value, this.dtTo.Value);
+            ohlcData = alpca.Get_TickerData(this.txtTicker.Text, this.dtFrom.Value, this.dtTo.Value, (OHLC_TIMESPAN)cboPeriod.SelectedValue);
             dgResults.DataSource = ohlcData;
             dgResults.Update();
             this.btnChart.Enabled = true;
@@ -69,7 +70,7 @@ namespace AlgoTrader
         private void cmdBacktest_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
-            IStrategy strategy = new RandomBuySell();
+            IStrategy strategy = new SimpleMomentum();
             BackTester backtest = new BackTester(strategy, ohlcData);
 
             frmAnalytics analytics = new frmAnalytics();

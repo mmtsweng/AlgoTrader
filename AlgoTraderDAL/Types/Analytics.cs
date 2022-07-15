@@ -8,15 +8,16 @@ namespace AlgoTraderDAL.Types
 {
     public class Analytics
     {
+        public string symbol { get; set; }
         public int wins { get; set; }
         public int losses { get; set; }
         public decimal winPercent { get
             {
-                return ((decimal)wins / (decimal)numberOfTrades) * 100;
+                return ((decimal)wins / ((decimal)numberOfTrades / 2)) * 100;
             }}
         public decimal lossPercent { get
             { 
-                return ((decimal)losses / (decimal)numberOfTrades) * 100;
+                return ((decimal)losses / ((decimal)numberOfTrades /2))* 100;
             }}
         public decimal initialCapital { get; set; }
         public decimal finalCapital { get; set; }
@@ -56,6 +57,7 @@ namespace AlgoTraderDAL.Types
             int lossCount = 0;
             List<Trade> runningPortfolio = new List<Trade>();
 
+            this.symbol = trades[0].symbol;
             this.initialCapital = accountbalance;
             this.finalCapital = accountbalance;
             this.minCapital = accountbalance;

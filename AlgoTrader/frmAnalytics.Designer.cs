@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.gpTrade = new System.Windows.Forms.GroupBox();
             this.txtNumTrades = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.txtEndDate = new System.Windows.Forms.TextBox();
@@ -49,6 +49,10 @@
             this.txtWins = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.txtNetProfitPercent = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.txtNetProfit = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.txtMaxCapital = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.txtMinCapital = new System.Windows.Forms.TextBox();
@@ -57,29 +61,25 @@
             this.label12 = new System.Windows.Forms.Label();
             this.txtInitCapital = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
-            this.txtNetProfitPercent = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.txtNetProfit = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.groupBox1.SuspendLayout();
+            this.gpTrade.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // gpTrade
             // 
-            this.groupBox1.Controls.Add(this.txtNumTrades);
-            this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.txtEndDate);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.txtStartDate);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(639, 67);
-            this.groupBox1.TabIndex = 18;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Trade Information";
+            this.gpTrade.Controls.Add(this.txtNumTrades);
+            this.gpTrade.Controls.Add(this.label9);
+            this.gpTrade.Controls.Add(this.txtEndDate);
+            this.gpTrade.Controls.Add(this.label8);
+            this.gpTrade.Controls.Add(this.txtStartDate);
+            this.gpTrade.Controls.Add(this.label7);
+            this.gpTrade.Location = new System.Drawing.Point(12, 12);
+            this.gpTrade.Name = "gpTrade";
+            this.gpTrade.Size = new System.Drawing.Size(639, 67);
+            this.gpTrade.TabIndex = 18;
+            this.gpTrade.TabStop = false;
+            this.gpTrade.Text = "Trade Information";
             // 
             // txtNumTrades
             // 
@@ -276,6 +276,40 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Financials";
             // 
+            // txtNetProfitPercent
+            // 
+            this.txtNetProfitPercent.Location = new System.Drawing.Point(106, 56);
+            this.txtNetProfitPercent.Name = "txtNetProfitPercent";
+            this.txtNetProfitPercent.Size = new System.Drawing.Size(77, 23);
+            this.txtNetProfitPercent.TabIndex = 33;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(-1, 64);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(101, 15);
+            this.label14.TabIndex = 32;
+            this.label14.Text = "Net Profit Percent";
+            this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtNetProfit
+            // 
+            this.txtNetProfit.Location = new System.Drawing.Point(106, 27);
+            this.txtNetProfit.Name = "txtNetProfit";
+            this.txtNetProfit.Size = new System.Drawing.Size(77, 23);
+            this.txtNetProfit.TabIndex = 31;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(42, 35);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(58, 15);
+            this.label15.TabIndex = 30;
+            this.label15.Text = "Net Profit";
+            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // txtMaxCapital
             // 
             this.txtMaxCapital.Location = new System.Drawing.Point(525, 56);
@@ -344,50 +378,16 @@
             this.label13.Text = "Initial Capital";
             this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // txtNetProfitPercent
-            // 
-            this.txtNetProfitPercent.Location = new System.Drawing.Point(106, 56);
-            this.txtNetProfitPercent.Name = "txtNetProfitPercent";
-            this.txtNetProfitPercent.Size = new System.Drawing.Size(77, 23);
-            this.txtNetProfitPercent.TabIndex = 33;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(-1, 64);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(101, 15);
-            this.label14.TabIndex = 32;
-            this.label14.Text = "Net Profit Percent";
-            this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // txtNetProfit
-            // 
-            this.txtNetProfit.Location = new System.Drawing.Point(106, 27);
-            this.txtNetProfit.Name = "txtNetProfit";
-            this.txtNetProfit.Size = new System.Drawing.Size(77, 23);
-            this.txtNetProfit.TabIndex = 31;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(42, 35);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(58, 15);
-            this.label15.TabIndex = 30;
-            this.label15.Text = "Net Profit";
-            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // frmAnalytics
             // 
             this.ClientSize = new System.Drawing.Size(669, 299);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.gpTrade);
             this.Name = "frmAnalytics";
             this.Text = "Backtest Results";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.gpTrade.ResumeLayout(false);
+            this.gpTrade.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -398,7 +398,7 @@
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox gpTrade;
         private System.Windows.Forms.TextBox txtNumTrades;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox txtEndDate;

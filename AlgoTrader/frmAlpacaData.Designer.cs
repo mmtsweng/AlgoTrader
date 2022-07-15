@@ -39,6 +39,8 @@
             this.dgResults = new System.Windows.Forms.DataGridView();
             this.btnChart = new System.Windows.Forms.Button();
             this.cmdBacktest = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cboPeriod = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
             this.SuspendLayout();
             // 
@@ -144,9 +146,28 @@
             this.cmdBacktest.UseVisualStyleBackColor = true;
             this.cmdBacktest.Click += new System.EventHandler(this.cmdBacktest_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(202, 14);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(41, 15);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Period";
+            // 
+            // cboPeriod
+            // 
+            this.cboPeriod.FormattingEnabled = true;
+            this.cboPeriod.Location = new System.Drawing.Point(249, 11);
+            this.cboPeriod.Name = "cboPeriod";
+            this.cboPeriod.Size = new System.Drawing.Size(121, 23);
+            this.cboPeriod.TabIndex = 11;
+            // 
             // frmAlpacaData
             // 
             this.ClientSize = new System.Drawing.Size(709, 433);
+            this.Controls.Add(this.cboPeriod);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.cmdBacktest);
             this.Controls.Add(this.btnChart);
             this.Controls.Add(this.dgResults);
@@ -178,5 +199,7 @@
         private System.Windows.Forms.DataGridView dgResults;
         private System.Windows.Forms.Button btnChart;
         private System.Windows.Forms.Button cmdBacktest;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox cboPeriod;
     }
 }

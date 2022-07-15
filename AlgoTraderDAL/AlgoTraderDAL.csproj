@@ -129,6 +129,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Strategies\AbstractStrategy.cs" />
     <Compile Include="Strategies\RandomBuySell.cs" />
+    <Compile Include="Strategies\SimpleMomentum.cs" />
     <Compile Include="Types\Analytics.cs" />
     <Compile Include="Types\IStrategy.cs" />
     <Compile Include="Types\OHLC.cs" />

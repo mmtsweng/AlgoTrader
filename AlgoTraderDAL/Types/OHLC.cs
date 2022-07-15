@@ -7,6 +7,13 @@ using Alpaca.Markets;
 
 namespace AlgoTraderDAL.Types
 {
+    public enum OHLC_TIMESPAN
+    {
+        DAY,
+        HOUR,
+        MINUTE
+    }
+
     public class OHLC
     {
         public string Symbol { get; set; }
@@ -16,6 +23,7 @@ namespace AlgoTraderDAL.Types
         public decimal Low { get; set; }
         public decimal Close { get; set; }
         public decimal Volume { get; set; }
+        public OHLC_TIMESPAN ticks { get; set; }
 
         public void parseIBar(IBar bardata)
         {

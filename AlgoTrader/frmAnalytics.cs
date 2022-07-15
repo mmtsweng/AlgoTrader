@@ -25,18 +25,19 @@ namespace AlgoTrader
             this.txtNumTrades.Text = analytics.numberOfTrades.ToString();
 
             this.txtWins.Text = analytics.wins.ToString();
-            this.txtWinPercent.Text = Math.Round(analytics.winPercent).ToString();
+            this.txtWinPercent.Text = Math.Round(analytics.winPercent, 1).ToString();
             this.txtMaxWins.Text = analytics.maxConsecutiveWins.ToString();
             this.txtLosses.Text = analytics.losses.ToString();
-            this.txtLossPercent.Text = Math.Round(analytics.lossPercent, 2).ToString();
+            this.txtLossPercent.Text = Math.Round(analytics.lossPercent, 1).ToString();
             this.txtMaxLoss.Text = analytics.maxConsecutiveLosses.ToString();
 
-            this.txtNetProfitPercent.Text = Math.Round(analytics.netProfitPercent).ToString();
+            this.txtNetProfitPercent.Text = Math.Round(analytics.netProfitPercent,1).ToString();
             this.txtNetProfit.Text = analytics.netProfit.ToString();
             this.txtInitCapital.Text = analytics.initialCapital.ToString();
             this.txtFinalCapital.Text = analytics.finalCapital.ToString();
             this.txtMinCapital.Text = analytics.minCapital.ToString();
             this.txtMaxCapital.Text = analytics.maxCapital.ToString();
+            this.gpTrade.Text = "Trade Information -- " + analytics.symbol;
 
             if (analytics.netProfit < 0)
             {
