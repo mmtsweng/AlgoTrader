@@ -127,6 +127,7 @@
     </Compile>
     <Compile Include="BackTesting\BackTester.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Strategies\AbstractStrategy.cs" />
     <Compile Include="Strategies\RandomBuySell.cs" />
     <Compile Include="Types\Analytics.cs" />
     <Compile Include="Types\IStrategy.cs" />
