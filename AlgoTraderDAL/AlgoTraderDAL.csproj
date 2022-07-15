@@ -142,6 +142,9 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>AlgoModels.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="AlgoModels.edmx.diagram">
       <DependentUpon>AlgoModels.edmx</DependentUpon>
     </None>

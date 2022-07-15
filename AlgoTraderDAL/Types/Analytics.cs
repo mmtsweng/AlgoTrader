@@ -34,6 +34,8 @@ namespace AlgoTraderDAL.Types
         public int numberOfTrades { get; set; }
         public int maxConsecutiveWins { get; set; }
         public int maxConsecutiveLosses { get; set; }
+        public List<Trade> winningTrades { get; set; }
+        public List<Trade> losingTrades { get; set; }
 
 
         public Analytics()
@@ -49,6 +51,8 @@ namespace AlgoTraderDAL.Types
             this.numberOfTrades = 0;
             this.maxConsecutiveWins = 0;
             this.maxConsecutiveLosses = 0;
+            this.winningTrades = new List<Trade>();
+            this.losingTrades = new List<Trade>();
         }
 
         public void AnalyzeTrades (decimal accountbalance, ref List<Trade> trades)
@@ -98,6 +102,7 @@ namespace AlgoTraderDAL.Types
                             lossCount = 0;
                             if (winCount > maxConsecutiveWins) { maxConsecutiveWins = winCount; }
                             this.wins++;
+                            this.winningTrades.Add(trade);
 
                             this.finalCapital += (tradecost - buytradecost); 
                             if (this.finalCapital > this.maxCapital) { this.maxCapital = this.finalCapital; }
@@ -109,6 +114,7 @@ namespace AlgoTraderDAL.Types
                             winCount = 0;
                             this.losses++;
                             if (lossCount > maxConsecutiveLosses) { maxConsecutiveLosses = lossCount; }
+                            this.losingTrades.Add(trade);
 
                             this.finalCapital += (tradecost-buytradecost);
                             if (this.finalCapital < this.minCapital) { this.minCapital = this.finalCapital; }

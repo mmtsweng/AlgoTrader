@@ -79,7 +79,7 @@ namespace AlgoTrader
 
             backtest.RunBackTest();
 
-            analytics.ProcessAnalytics(backtest.analytics);
+            analytics.ProcessAnalytics(backtest.analytics, ref backtest);
             this.Cursor = Cursors.Default;
         }
     }

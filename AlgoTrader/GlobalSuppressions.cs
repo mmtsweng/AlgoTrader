@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>", Scope = "member", Target = "~M:AlgoTrader.frmChart.LoadOHLC(System.Collections.Generic.List{AlgoTraderDAL.Types.OHLC})")]
+[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>", Scope = "member", Target = "~M:AlgoTrader.frmAnalytics.RefreshChartData(System.Collections.Generic.List{AlgoTraderDAL.Types.OHLC})")]
