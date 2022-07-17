@@ -19,7 +19,15 @@ namespace AlgoTrader
             InitializeComponent();
         }
 
-        public void ProcessAnalytics(Analytics analytics, ref BackTester backtest)
+        public void ProcessBacktest(ref BackTester backtest, Analytics analytics)
+        {
+            if (analytics == null) { analytics = backtest.analytics; }
+            ProcessAnalytics(analytics);
+            RefreshChartData(ref backtest, analytics);
+            this.Focus();
+        }
+
+        public void ProcessAnalytics(Analytics analytics)
         {
             this.txtStartDate.Text = analytics.startDateTime.ToShortDateString();
             this.txtEndDate.Text = analytics.endDateTime.ToShortDateString();
@@ -50,12 +58,11 @@ namespace AlgoTrader
                 this.txtNetProfit.BackColor = Color.LightGreen;
                 this.txtNetProfitPercent.BackColor = Color.LightGreen;
             }
-            RefreshChartData(ref analytics, ref backtest);
-            this.Focus();
         }
 
-        public void RefreshChartData(ref Analytics analytics, ref BackTester backtest)
+        public void RefreshChartData(ref BackTester backtest, Analytics analytics)
         {
+            if (backtest.historicalOHLC.Count == 0) { return; }
 
             ScottPlot.OHLC[] prices = backtest.historicalOHLC.Select(p => new ScottPlot.OHLC(0, 0, 0, 0, 0)
             {
@@ -64,27 +71,61 @@ namespace AlgoTrader
                 Low = decimal.ToDouble(p.Low),
                 Close = decimal.ToDouble(p.Close),
                 Volume = decimal.ToDouble(p.Volume),
-                DateTime = p.Timeframe
+                DateTime = p.Timeframe,
+                TimeSpan = p.TimespanFromOHLCTimespan()
             }).ToArray();
 
-            double[] buytimes = backtest.portfolio.trades.Where(x => x.side == AlgoTraderDAL.TradeSide.BUY).Select(x => x.transactionDateTime.ToOADate()).ToArray();
-            double[] buys = backtest.portfolio.trades.Where(x => x.side == AlgoTraderDAL.TradeSide.BUY).Select(x => (double)x.actualPrice).ToArray();
-            double[] losingtimes = backtest.analytics.losingTrades.Select(x => x.transactionDateTime.ToOADate()).ToArray();
-            double[] losingsells = backtest.analytics.losingTrades.Select(x => (double)x.actualPrice).ToArray();
-            double[] winningtimes = backtest.analytics.winningTrades.Select(x => x.transactionDateTime.ToOADate()).ToArray();
-            double[] winningsells = backtest.analytics.winningTrades.Select(x => (double)x.actualPrice).ToArray();
+            double[] buytimes = backtest.portfolio.trades
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.BUY
+                    && x.transactionDateTime >= analytics.startDateTime
+                    && x.transactionDateTime <= analytics.endDateTime)
+                .Select(x => x.transactionDateTime.ToOADate()).ToArray();
+            double[] buys = backtest.portfolio.trades.Where(x => x.side == AlgoTraderDAL.TradeSide.BUY
+                    && x.transactionDateTime >= analytics.startDateTime
+                    && x.transactionDateTime <= analytics.endDateTime)
+                .Select(x => (double)x.actualPrice).ToArray();
+            double[] losingtimes = backtest.analytics.losingTrades
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.SELL
+                    && x.transactionDateTime >= analytics.startDateTime
+                    && x.transactionDateTime <= analytics.endDateTime)
+                .Select(x => x.transactionDateTime.ToOADate()).ToArray();
+            double[] losingsells = backtest.analytics.losingTrades
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.SELL
+                    && x.transactionDateTime >= analytics.startDateTime
+                    && x.transactionDateTime <= analytics.endDateTime)
+                .Select(x => (double)x.actualPrice).ToArray();
+            double[] winningtimes = backtest.analytics.winningTrades
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.SELL
+                    && x.transactionDateTime >= analytics.startDateTime
+                    && x.transactionDateTime <= analytics.endDateTime)
+                .Select(x => x.transactionDateTime.ToOADate()).ToArray();
+            double[] winningsells = backtest.analytics.winningTrades
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.SELL
+                    && x.transactionDateTime >= analytics.startDateTime
+                    && x.transactionDateTime <= analytics.endDateTime)
+                .Select(x => (double)x.actualPrice).ToArray();
 
+            this.pltResults.Plot.Clear();
             var plt = new ScottPlot.Plot(800, 600);
-            if (!backtest.strategy.isIntraday)
+            //if (!backtest.strategy.isIntraday)
+            //{
+            var cplot = this.pltResults.Plot.AddCandlesticks(prices);
+            cplot.ColorUp = Color.LightGreen;
+            cplot.ColorDown = Color.LightPink;
+            cplot.WickColor = Color.DarkGray;
+            //}
+            if (buys.Length > 0)
             {
-                var cplot = this.pltResults.Plot.AddOHLCs(prices);
-                cplot.ColorUp = Color.LightGreen;
-                cplot.ColorDown = Color.LightPink;
-                cplot.WickColor = Color.DarkGray;
+                this.pltResults.Plot.AddScatterPoints(buytimes, buys, Color.DarkBlue, markerShape: ScottPlot.MarkerShape.filledCircle, markerSize: 10);
             }
-            this.pltResults.Plot.AddScatterPoints(buytimes, buys, Color.DarkBlue,markerShape: ScottPlot.MarkerShape.filledCircle, markerSize:10);
-            this.pltResults.Plot.AddScatterPoints(winningtimes, winningsells, Color.DarkGreen, markerShape: ScottPlot.MarkerShape.filledTriangleUp, markerSize: 10);
-            this.pltResults.Plot.AddScatterPoints(losingtimes, losingsells, Color.DarkRed, markerShape: ScottPlot.MarkerShape.filledTriangleDown, markerSize: 10);
+            if (winningsells.Length > 0)
+            {
+                this.pltResults.Plot.AddScatterPoints(winningtimes, winningsells, Color.DarkGreen, markerShape: ScottPlot.MarkerShape.filledTriangleUp, markerSize: 10);
+            }
+            if (losingsells.Length > 0)
+            {
+                this.pltResults.Plot.AddScatterPoints(losingtimes, losingsells, Color.DarkRed, markerShape: ScottPlot.MarkerShape.filledTriangleDown, markerSize: 10);
+            }
 
             this.pltResults.Plot.XAxis.DateTimeFormat(true);
             this.pltResults.Refresh();

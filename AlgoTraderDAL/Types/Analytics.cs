@@ -11,21 +11,33 @@ namespace AlgoTraderDAL.Types
         public string symbol { get; set; }
         public int wins { get; set; }
         public int losses { get; set; }
-        public decimal winPercent { get
+        public decimal winPercent
+        {
+            get
             {
-                return ((decimal)wins / ((decimal)numberOfTrades / 2)) * 100;
-            }}
-        public decimal lossPercent { get
-            { 
-                return ((decimal)losses / ((decimal)numberOfTrades /2))* 100;
-            }}
+                if (wins == 0) { return 0; }
+                else { return ((decimal)wins / ((decimal)numberOfTrades / 2)) * 100; };
+            }
+        }
+        public decimal lossPercent
+        {
+            get
+            {
+                if (wins == 0) { return 0; }
+                else { return ((decimal)losses / ((decimal)numberOfTrades / 2)) * 100; };
+            }
+        }   
         public decimal initialCapital { get; set; }
         public decimal finalCapital { get; set; }
         public decimal maxCapital { get; set; }
         public decimal minCapital { get; set; }
         public decimal netProfitPercent { get
             {
-                return ((finalCapital - initialCapital) / ((initialCapital + finalCapital)/2) * 100);
+                if (finalCapital == 0) { return 0; }
+                else
+                {
+                    return ((finalCapital - initialCapital) / ((initialCapital + finalCapital) / 2) * 100);
+                }
             }
         }
         public decimal netProfit { get { return this.finalCapital - this.initialCapital; } }
@@ -40,14 +52,19 @@ namespace AlgoTraderDAL.Types
 
         public Analytics()
         {
+            Reset();
+            this.startDateTime = DateTime.MinValue;
+            this.endDateTime = DateTime.MaxValue;
+        }
+
+        public void Reset()
+        {
             this.wins = 0;
             this.losses = 0;
             this.initialCapital = 0;
             this.finalCapital = 0;
             this.maxCapital = 0;
             this.minCapital = 0;
-            this.startDateTime = DateTime.MinValue;
-            this.endDateTime = DateTime.MaxValue;
             this.numberOfTrades = 0;
             this.maxConsecutiveWins = 0;
             this.maxConsecutiveLosses = 0;
@@ -57,6 +74,7 @@ namespace AlgoTraderDAL.Types
 
         public void AnalyzeTrades (decimal accountbalance, ref List<Trade> trades)
         {
+            if  (trades.Count == 0) { return; }
             int winCount = 0;
             int lossCount = 0;
             List<Trade> runningPortfolio = new List<Trade>();
@@ -100,8 +118,8 @@ namespace AlgoTraderDAL.Types
                             //winning trade
                             winCount++;
                             lossCount = 0;
-                            if (winCount > maxConsecutiveWins) { maxConsecutiveWins = winCount; }
                             this.wins++;
+                            if (winCount > maxConsecutiveWins) { maxConsecutiveWins = winCount; }
                             this.winningTrades.Add(trade);
 
                             this.finalCapital += (tradecost - buytradecost); 
@@ -116,7 +134,7 @@ namespace AlgoTraderDAL.Types
                             if (lossCount > maxConsecutiveLosses) { maxConsecutiveLosses = lossCount; }
                             this.losingTrades.Add(trade);
 
-                            this.finalCapital += (tradecost-buytradecost);
+                            this.finalCapital += (tradecost - buytradecost);
                             if (this.finalCapital < this.minCapital) { this.minCapital = this.finalCapital; }
                         }
 
@@ -124,6 +142,30 @@ namespace AlgoTraderDAL.Types
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Helper method to get a copy of this object 
+        ///    (used to store lists of analytics, since references update previous runs)
+        /// </summary>
+        /// <returns></returns>
+        public Analytics Copy()
+        {
+            Analytics copy = new Analytics();
+            var props = typeof(Analytics).GetProperties();
+            var fields = typeof(Analytics).GetFields();
+            foreach (var item in props)
+            {
+                if (item.CanWrite)
+                {
+                    item.SetValue(copy, item.GetValue(this));
+                }
+            }
+            foreach (var item in fields)
+            {
+                item.SetValue(copy, item.GetValue(this));
+            }
+            return copy;
         }
     }
 }

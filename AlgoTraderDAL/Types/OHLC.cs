@@ -35,5 +35,28 @@ namespace AlgoTraderDAL.Types
             this.Timeframe = bardata.TimeUtc;
             this.Volume = bardata.Volume;
         }
+
+        /// <summary>
+        /// Helper method to convert ticks to a timespan
+        ///     Used for charting
+        /// </summary>
+        /// <returns></returns>
+        public TimeSpan TimespanFromOHLCTimespan()
+        {
+            TimeSpan tspan = new TimeSpan(1, 0, 0, 0);
+            switch (ticks)
+            {
+                case OHLC_TIMESPAN.HOUR:
+                    tspan = new TimeSpan(1, 0, 0);
+                    break;
+                case OHLC_TIMESPAN.MINUTE:
+                    tspan = new TimeSpan(0, 1, 0);
+                    break;
+                default:
+                    break;
+            }
+
+            return tspan;
+        }
     }
 }

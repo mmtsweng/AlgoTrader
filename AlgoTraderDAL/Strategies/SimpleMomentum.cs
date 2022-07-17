@@ -27,7 +27,7 @@ namespace AlgoTraderDAL.Strategies
             this.opens = new Queue<decimal>();
             this.closes = new Queue<decimal>();
             this.times = new Queue<decimal>();
-            QueueSize = 3;
+            QueueSize = 22;
         }
 
         public override Trade Next(OHLC ohlc)
@@ -93,8 +93,8 @@ namespace AlgoTraderDAL.Strategies
         {
             Trade trade = base.MakeTrade(ohlc, side);
 
-            trade.actualPrice = ohlc.Open; // (ohlc.High + ohlc.Low) / 2;
-            trade.submittedPrice = ohlc.Open;  //(ohlc.Open + ohlc.Close) / 2;
+            trade.actualPrice = (ohlc.High + ohlc.Low) / 2;
+            trade.submittedPrice = (ohlc.Open + ohlc.Close) / 2;
 
             return trade;
         }

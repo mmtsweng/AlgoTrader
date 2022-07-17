@@ -24,12 +24,15 @@ namespace AlgoTraderDAL.Strategies
             throw new NotImplementedException();
         }
 
-        public virtual void Close(OHLC ohlc)
+        public virtual Trade Close(OHLC ohlc)
         {
+            Trade trade = null;
             if (this.openPostions > 0)
             {
-                MakeTrade(ohlc, TradeSide.SELL);
+                trade = MakeTrade(ohlc, TradeSide.SELL);
+                this.openPostions--;
             }
+            return trade;
         }
 
         public virtual void Init()

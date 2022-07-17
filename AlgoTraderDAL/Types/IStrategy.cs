@@ -15,7 +15,7 @@ namespace AlgoTraderDAL.Types
 
         void Init();
         Trade Next(OHLC ohlc);
-        void Close(OHLC ohlc);
+        Trade Close(OHLC ohlc);
 
         bool BuySignal(OHLC ohlc);
         bool SellSignal(OHLC ohlc);

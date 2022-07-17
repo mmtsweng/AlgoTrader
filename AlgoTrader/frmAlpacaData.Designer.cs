@@ -41,6 +41,9 @@
             this.cmdBacktest = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.cboPeriod = new System.Windows.Forms.ComboBox();
+            this.btnPrevious = new System.Windows.Forms.Button();
+            this.btnNext = new System.Windows.Forms.Button();
+            this.lblDays = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
             this.SuspendLayout();
             // 
@@ -120,7 +123,7 @@
             this.dgResults.Location = new System.Drawing.Point(12, 136);
             this.dgResults.Name = "dgResults";
             this.dgResults.RowTemplate.Height = 25;
-            this.dgResults.Size = new System.Drawing.Size(685, 285);
+            this.dgResults.Size = new System.Drawing.Size(651, 267);
             this.dgResults.TabIndex = 7;
             // 
             // btnChart
@@ -138,7 +141,7 @@
             // 
             this.cmdBacktest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdBacktest.Enabled = false;
-            this.cmdBacktest.Location = new System.Drawing.Point(596, 107);
+            this.cmdBacktest.Location = new System.Drawing.Point(562, 107);
             this.cmdBacktest.Name = "cmdBacktest";
             this.cmdBacktest.Size = new System.Drawing.Size(101, 23);
             this.cmdBacktest.TabIndex = 9;
@@ -163,9 +166,47 @@
             this.cboPeriod.Size = new System.Drawing.Size(121, 23);
             this.cboPeriod.TabIndex = 11;
             // 
+            // btnPrevious
+            // 
+            this.btnPrevious.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPrevious.Location = new System.Drawing.Point(437, 107);
+            this.btnPrevious.Name = "btnPrevious";
+            this.btnPrevious.Size = new System.Drawing.Size(38, 23);
+            this.btnPrevious.TabIndex = 12;
+            this.btnPrevious.Text = "<<";
+            this.btnPrevious.UseVisualStyleBackColor = true;
+            this.btnPrevious.Visible = false;
+            this.btnPrevious.Click += new System.EventHandler(this.btnPrevious_Click);
+            // 
+            // btnNext
+            // 
+            this.btnNext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNext.Location = new System.Drawing.Point(518, 107);
+            this.btnNext.Name = "btnNext";
+            this.btnNext.Size = new System.Drawing.Size(38, 23);
+            this.btnNext.TabIndex = 13;
+            this.btnNext.Text = ">>";
+            this.btnNext.UseVisualStyleBackColor = true;
+            this.btnNext.Visible = false;
+            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
+            // 
+            // lblDays
+            // 
+            this.lblDays.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDays.AutoSize = true;
+            this.lblDays.Location = new System.Drawing.Point(481, 111);
+            this.lblDays.Name = "lblDays";
+            this.lblDays.Size = new System.Drawing.Size(32, 15);
+            this.lblDays.TabIndex = 14;
+            this.lblDays.Text = "Days";
+            this.lblDays.Visible = false;
+            // 
             // frmAlpacaData
             // 
-            this.ClientSize = new System.Drawing.Size(709, 433);
+            this.ClientSize = new System.Drawing.Size(675, 415);
+            this.Controls.Add(this.lblDays);
+            this.Controls.Add(this.btnNext);
+            this.Controls.Add(this.btnPrevious);
             this.Controls.Add(this.cboPeriod);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.cmdBacktest);
@@ -201,5 +242,8 @@
         private System.Windows.Forms.Button cmdBacktest;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox cboPeriod;
+        private System.Windows.Forms.Button btnPrevious;
+        private System.Windows.Forms.Button btnNext;
+        private System.Windows.Forms.Label lblDays;
     }
 }
