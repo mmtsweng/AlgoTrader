@@ -27,7 +27,7 @@ namespace AlgoTraderDAL.Strategies
             this.opens = new Queue<decimal>();
             this.closes = new Queue<decimal>();
             this.times = new Queue<decimal>();
-            QueueSize = 22;
+            QueueSize = 4;
         }
 
         public override Trade Next(OHLC ohlc)

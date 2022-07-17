@@ -59,7 +59,8 @@ namespace AlgoTraderDAL.BackTesting
         {
             if (firstRun)
             {
-                this.strategy.Init();                
+                this.strategy.Init();
+                this.portfolio = new Portfolio(STARTING_ACCOUNT_BALANCE);
             }
 
             Trade closingTrade;
@@ -67,7 +68,6 @@ namespace AlgoTraderDAL.BackTesting
             {
                 return null;
             }
-            this.portfolio = new Portfolio(STARTING_ACCOUNT_BALANCE);
             OHLC trackingDay = historicalOHLC[0];
             this.analytics.startDateTime = (historicalOHLC.OrderByDescending(t => t.Timeframe).LastOrDefault()).Timeframe;
             this.analytics.endDateTime = (historicalOHLC.OrderByDescending(t => t.Timeframe).FirstOrDefault()).Timeframe;
