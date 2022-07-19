@@ -127,9 +127,18 @@
     </Compile>
     <Compile Include="BackTesting\BackTester.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="HistoricalLog.cs">
+      <DependentUpon>AlgoModels.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HistoricalOHLC.cs">
+      <DependentUpon>AlgoModels.tt</DependentUpon>
+    </Compile>
     <Compile Include="Strategies\AbstractStrategy.cs" />
     <Compile Include="Strategies\RandomBuySell.cs" />
     <Compile Include="Strategies\SimpleMomentum.cs" />
+    <Compile Include="TDAKey.cs">
+      <DependentUpon>AlgoModels.tt</DependentUpon>
+    </Compile>
     <Compile Include="Types\Analytics.cs" />
     <Compile Include="Types\IStrategy.cs" />
     <Compile Include="Types\OHLC.cs" />

@@ -49,5 +49,12 @@ namespace AlgoTrader
             aplaca.MdiParent = this;
             aplaca.Show();
         }
+
+        private void btnBackfill_Click(object sender, EventArgs e)
+        {
+            frmBackfill backfill = new frmBackfill();
+            backfill.MdiParent = this;
+            backfill.Show();
+        }
     }
 }

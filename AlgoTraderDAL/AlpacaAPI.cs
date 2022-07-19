@@ -43,7 +43,7 @@ namespace AlgoTraderDAL
                 var client = Environments.Paper.GetAlpacaDataClient(new SecretKey(this.setting.API_KEY, this.setting.API_SECRET));
                 try
                 {
-                    var req = new HistoricalBarsRequest(ticker, from, to, btf).WithPageSize(9000);
+                    var req = new HistoricalBarsRequest(ticker, DateTime.SpecifyKind(from, DateTimeKind.Utc), DateTime.SpecifyKind(to, DateTimeKind.Utc), btf).WithPageSize(9000);
                     var page = await client.ListHistoricalBarsAsync(req).ConfigureAwait(false);
                     foreach (var bar in page.Items)
                     {
@@ -63,7 +63,8 @@ namespace AlgoTraderDAL
         }
 
         /// <summary>
-        /// Public Method to retrive Ticker Data from Alpaca
+        /// Public Method to retrive Ticker Data from the local database if it exists
+        ///     If not, query Alpaca for the data
         /// </summary>
         /// <param name="ticker"></param>
         /// <param name="from"></param>
@@ -72,10 +73,43 @@ namespace AlgoTraderDAL
         public List<OHLC> Get_TickerData(string ticker, DateTime from, DateTime to, OHLC_TIMESPAN ticks) 
         {
             List<OHLC> result = new List<OHLC>();
-            result = Get_TickerDataAsync(ticker, from, to, ticks).GetAwaiter().GetResult();
+            bool hasDBData = false;
+
+            using (Entities entities = new Entities())
+            {
+                var logs = entities.HistoricalLogs.Where(
+                        lg => lg.DataDate == from.Date
+                        && lg.TickResolution == (int)ticks).Count();
+                if (logs > 0)
+                {
+                    hasDBData = true;
+                    result = entities.HistoricalOHLCs.Where(
+                        x => x.Timeframe >= from
+                        && x.Timeframe <= to
+                        && x.Timespan == (int)ticks
+                        ).Select(
+                            o => new OHLC()
+                            {
+                                Symbol = o.Symbol,
+                                Open = (decimal)o.Open,
+                                High = (decimal)o.High,
+                                Low= (decimal)o.Low,
+                                Close = (decimal)o.Close,
+                                Volume = (decimal)o.Volume,
+                                Timeframe = (DateTime)o.Timeframe,
+                                ticks = (OHLC_TIMESPAN)o.Timespan
+                            }).ToList();
+                }                
+            }
+
+            //If we didn't get database data, query API for the data
+            if (!hasDBData)
+            {
+                result = Get_TickerDataAsync(ticker, from, to, ticks).GetAwaiter().GetResult();
+                SaveBackfill(ticker, (int)ticks, from, to, result);
+            }
             return result;
         }
-
 
         /// <summary>
         /// Helper method to convert OHLC_TIMESPAN objects to Alpaca Specific BarTimeframes
@@ -102,5 +136,105 @@ namespace AlgoTraderDAL
             }
             return btf;
         }
+
+        /// <summary>
+        /// Method to store the historical OHLC data for a particular date
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="ohlcData"></param>
+        public void SaveBackfill(string symbol, int tickResolution, DateTime fromDate, DateTime toDate, List<OHLC> ohlcData)
+        {
+            using (Entities entities = new Entities())
+            {
+
+                //Store the log dates and ticks
+                List<DateTime?> dates = GetDatesFromRange(fromDate, toDate);
+                foreach (DateTime date in dates)
+                {
+                    if (entities.HistoricalLogs.Where(
+                        x => x.DataDate >= fromDate
+                        && x.DataDate <= toDate
+                        && x.TickResolution == tickResolution).Count() == 0)
+                    {
+                        HistoricalLog log = new HistoricalLog()
+                        {
+                            DataDate = date.Date,
+                            Symbol = symbol,
+                            TickResolution = tickResolution
+                        };
+                        entities.HistoricalLogs.Add(log);
+                    }
+                }              
+
+                //Add new items
+                if (ohlcData.Count > 0)
+                {
+                    List<HistoricalOHLC> ohlc = ohlcData.Select(
+                    x => new HistoricalOHLC()
+                    {
+                        Symbol = symbol,
+                        Open = (decimal?)x.Open,
+                        Close = (decimal?)x.Close,
+                        High = (decimal?)x.High,
+                        Low = (decimal?)x.Low,
+                        Volume = (long?)x.Volume,
+                        Timeframe = (DateTime?)x.Timeframe,
+                        Timespan = tickResolution
+
+                    }).ToList();
+                    entities.HistoricalOHLCs.AddRange(ohlc);
+                }
+                entities.SaveChanges();
+            }
+
+            return;
+        }
+
+        public void RemoveExistingHistoricalOHLCs(DateTime fromDate, DateTime toDate, OHLC_TIMESPAN ticks)
+        {
+
+            Entities entities = new Entities();
+
+            //Remove previously saved OHLC Items
+            DateTime from = fromDate.Date;
+            DateTime to = toDate.Date;
+            var remove = entities.HistoricalOHLCs
+                .Where(r =>
+                    r.Timeframe >= fromDate
+                    && r.Timeframe <= toDate
+                    && r.Timespan == (int)ticks).ToList();
+            if (remove.Count > 0)
+            {
+                entities.HistoricalOHLCs.RemoveRange(remove);
+            }
+
+            //Remove previously saved Log Entries
+            var removelog = entities.HistoricalLogs
+                .Where(l =>
+                     l.DataDate >= fromDate
+                    && l.DataDate <= toDate
+                    && l.TickResolution == (int)ticks
+                ).ToList();
+            if (removelog.Count > 0)
+            {
+                entities.HistoricalLogs.RemoveRange(removelog);
+            }
+
+            entities.SaveChanges();
+        }
+
+        public List<DateTime?> GetDatesFromRange(DateTime dtFrom, DateTime dtTo)
+        {
+            DateTime startDate = dtFrom.Date;
+            DateTime endDate = dtTo.Date;
+            List<DateTime?> dates = Enumerable
+                .Range(0, int.MaxValue)
+                .Select(index => new DateTime?(startDate.AddDays(index)))
+                .TakeWhile(date => date <= endDate)
+                .ToList();
+
+            return dates;
+        }
+
     }
 }

@@ -7,7 +7,7 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>bagofmoney.ico</ApplicationIcon>
+    <ApplicationIcon>check_graph.ico</ApplicationIcon>
     <UseWPF>True</UseWPF>
   </PropertyGroup>
   <ItemGroup>
@@ -27,7 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="appsettings.json" />
-    <Content Include="bagofmoney.ico" />
+    <Content Include="check_graph.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.4" />
@@ -47,5 +47,18 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AlgoTraderDAL\AlgoTraderDAL.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="AlgoResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AlgoResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="AlgoResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AlgoResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

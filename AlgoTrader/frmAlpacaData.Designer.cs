@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAlpacaData));
             this.label1 = new System.Windows.Forms.Label();
             this.lblTicker = new System.Windows.Forms.Label();
             this.txtTicker = new System.Windows.Forms.TextBox();
@@ -219,6 +220,7 @@
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.txtTicker);
             this.Controls.Add(this.lblTicker);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmAlpacaData";
             this.Load += new System.EventHandler(this.frmAlpacaData_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).EndInit();
