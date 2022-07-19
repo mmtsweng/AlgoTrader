@@ -95,11 +95,11 @@
             // btnLogin
             // 
             this.btnLogin.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnLogin.Image = ((System.Drawing.Image)(resources.GetObject("btnLogin.Image")));
+            this.btnLogin.Image = global::AlgoTrader.AlgoResources.Testing;
             this.btnLogin.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(23, 22);
-            this.btnLogin.Text = "TDA Login";
+            this.btnLogin.Text = "Run a backtest";
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
             // btnBackfill
@@ -109,8 +109,8 @@
             this.btnBackfill.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnBackfill.Name = "btnBackfill";
             this.btnBackfill.Size = new System.Drawing.Size(23, 22);
-            this.btnBackfill.Text = "Backtest";
-            this.btnBackfill.ToolTipText = "Backtesting";
+            this.btnBackfill.Text = "Backfill";
+            this.btnBackfill.ToolTipText = "Backfill data for a Timeframe";
             this.btnBackfill.Click += new System.EventHandler(this.btnBackfill_Click);
             // 
             // btnParameters
