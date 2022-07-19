@@ -39,6 +39,8 @@
             this.btnLogin = new System.Windows.Forms.ToolStripButton();
             this.btnBackfill = new System.Windows.Forms.ToolStripButton();
             this.btnParameters = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnLiveTrading = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -85,7 +87,9 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnLogin,
             this.btnBackfill,
-            this.btnParameters});
+            this.btnParameters,
+            this.toolStripSeparator1,
+            this.btnLiveTrading});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(933, 25);
@@ -124,6 +128,22 @@
             this.btnParameters.ToolTipText = "Strategy Parameters";
             this.btnParameters.Click += new System.EventHandler(this.btnParameters_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnLiveTrading
+            // 
+            this.btnLiveTrading.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnLiveTrading.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnLiveTrading.Image = global::AlgoTrader.AlgoResources.Live_trading;
+            this.btnLiveTrading.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnLiveTrading.Name = "btnLiveTrading";
+            this.btnLiveTrading.Size = new System.Drawing.Size(23, 22);
+            this.btnLiveTrading.Text = "toolStripButton1";
+            this.btnLiveTrading.Click += new System.EventHandler(this.btnLiveTrading_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -157,5 +177,7 @@
         private System.Windows.Forms.ToolStripButton btnLogin;
         private System.Windows.Forms.ToolStripButton btnBackfill;
         private System.Windows.Forms.ToolStripButton btnParameters;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton btnLiveTrading;
     }
 }

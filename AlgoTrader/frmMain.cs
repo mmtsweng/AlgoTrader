@@ -63,5 +63,12 @@ namespace AlgoTrader
             parameters.MdiParent = this;
             parameters.Show();
         }
+
+        private void btnLiveTrading_Click(object sender, EventArgs e)
+        {
+            frmRealtimeTrades realtimeTrades = new frmRealtimeTrades();
+            realtimeTrades.MdiParent = this;
+            realtimeTrades.Show();
+        }
     }
 }

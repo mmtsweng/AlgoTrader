@@ -83,6 +83,16 @@ namespace AlgoTrader {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Live_trading {
+            get {
+                object obj = ResourceManager.GetObject("Live_trading", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap main_icon {
             get {
                 object obj = ResourceManager.GetObject("main_icon", resourceCulture);
