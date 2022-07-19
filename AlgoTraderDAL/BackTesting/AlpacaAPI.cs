@@ -190,6 +190,12 @@ namespace AlgoTraderDAL
             return;
         }
 
+        /// <summary>
+        /// Clear out old data in preparation for a backfill
+        /// </summary>
+        /// <param name="fromDate"></param>
+        /// <param name="toDate"></param>
+        /// <param name="ticks"></param>
         public void RemoveExistingHistoricalOHLCs(DateTime fromDate, DateTime toDate, OHLC_TIMESPAN ticks)
         {
 
@@ -223,6 +229,12 @@ namespace AlgoTraderDAL
             entities.SaveChanges();
         }
 
+        /// <summary>
+        /// Helper method to get all dates between a start and end date to iterate through
+        /// </summary>
+        /// <param name="dtFrom"></param>
+        /// <param name="dtTo"></param>
+        /// <returns></returns>
         public List<DateTime?> GetDatesFromRange(DateTime dtFrom, DateTime dtTo)
         {
             DateTime startDate = dtFrom.Date;

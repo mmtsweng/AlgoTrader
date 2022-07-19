@@ -121,7 +121,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AlgoModels.edmx</DependentUpon>
     </Compile>
-    <Compile Include="AlpacaAPI.cs" />
+    <Compile Include="BackTesting\AlpacaAPI.cs" />
     <Compile Include="AlpacaSetting.cs">
       <DependentUpon>AlgoModels.tt</DependentUpon>
     </Compile>
@@ -145,9 +145,9 @@
     <Compile Include="Types\Analytics.cs" />
     <Compile Include="Types\IStrategy.cs" />
     <Compile Include="Types\OHLC.cs" />
-    <Compile Include="Portfolio.cs" />
+    <Compile Include="BackTesting\Portfolio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Trade.cs" />
+    <Compile Include="BackTesting\Trade.cs" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="AlgoModels.edmx">
