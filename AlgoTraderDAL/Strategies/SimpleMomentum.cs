@@ -21,15 +21,39 @@ namespace AlgoTraderDAL.Strategies
             this.isIntraday = true;
         }
 
+        /// <summary>
+        /// Initialize Strategy
+        /// </summary>
         public override void Init()
         {
             base.Init();
             this.opens = new Queue<decimal>();
             this.closes = new Queue<decimal>();
             this.times = new Queue<decimal>();
-            QueueSize = 4;
         }
 
+        /// <summary>
+        /// Method to parse the db parameters for this strategy
+        /// </summary>
+        public override void UpdateParameters()
+        {
+            base.UpdateParameters();
+            int parsedQue = 0;
+            if (int.TryParse(this.dbParameters["QueueSize"], out parsedQue))
+            {
+                this.QueueSize = parsedQue;
+            }
+            else 
+            {
+                this.QueueSize = 5;
+            }
+        }
+
+        /// <summary>
+        /// Process the next Stock iteration
+        /// </summary>
+        /// <param name="ohlc"></param>
+        /// <returns></returns>
         public override Trade Next(OHLC ohlc)
         {
             UpdateQueues(ohlc);
@@ -65,6 +89,11 @@ namespace AlgoTraderDAL.Strategies
             }
         }
 
+        /// <summary>
+        /// Figure out if we want to buy
+        /// </summary>
+        /// <param name="ohlc"></param>
+        /// <returns></returns>
         public override bool BuySignal(OHLC ohlc)
         {
             if (openTrend != null && closeTrend != null)
@@ -77,6 +106,11 @@ namespace AlgoTraderDAL.Strategies
             }
         }
 
+        /// <summary>
+        /// Figure out if we want to sell
+        /// </summary>
+        /// <param name="ohlc"></param>
+        /// <returns></returns>
         public override bool SellSignal(OHLC ohlc)
         {
             if (openTrend != null && closeTrend != null)
@@ -89,6 +123,12 @@ namespace AlgoTraderDAL.Strategies
             }
         }
 
+        /// <summary>
+        /// Make the actual trade
+        /// </summary>
+        /// <param name="ohlc"></param>
+        /// <param name="side"></param>
+        /// <returns></returns>
         public override Trade MakeTrade(OHLC ohlc, TradeSide side)
         {
             Trade trade = base.MakeTrade(ohlc, side);
@@ -126,7 +166,6 @@ namespace AlgoTraderDAL.Strategies
             results.End = GetYValue(cachedData.Max(a => a.Item1), results);
             return results;
         }
-
 
         /// <summary>
         /// Get the YValue for the specified X, based on the trendline

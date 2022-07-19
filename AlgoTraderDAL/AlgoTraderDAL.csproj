@@ -136,6 +136,9 @@
     <Compile Include="Strategies\AbstractStrategy.cs" />
     <Compile Include="Strategies\RandomBuySell.cs" />
     <Compile Include="Strategies\SimpleMomentum.cs" />
+    <Compile Include="StrategyOption.cs">
+      <DependentUpon>AlgoModels.tt</DependentUpon>
+    </Compile>
     <Compile Include="TDAKey.cs">
       <DependentUpon>AlgoModels.tt</DependentUpon>
     </Compile>

@@ -6,8 +6,9 @@
     <edmx:Diagrams>
       <Diagram DiagramId="63b02b0f552f4c78876351eb0842bbcd" Name="Diagram1">
         <EntityTypeShape EntityType="AlgoTraderModel.AlpacaSetting" Width="1.5" PointX="0.625" PointY="0.5" />
-        <EntityTypeShape EntityType="AlgoTraderModel.HistoricalLog" Width="1.5" PointX="3.75" PointY="0.75" />
-        <EntityTypeShape EntityType="AlgoTraderModel.HistoricalOHLC" Width="1.5" PointX="0.75" PointY="3.75" />
+        <EntityTypeShape EntityType="AlgoTraderModel.HistoricalLog" Width="1.5" PointX="4.875" PointY="0.625" />
+        <EntityTypeShape EntityType="AlgoTraderModel.HistoricalOHLC" Width="1.5" PointX="6.5" PointY="0.625" />
+        <EntityTypeShape EntityType="AlgoTraderModel.StrategyOption" Width="1.5" PointX="0.625" PointY="3" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

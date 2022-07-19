@@ -29,5 +29,6 @@ namespace AlgoTraderDAL
         public virtual DbSet<AlpacaSetting> AlpacaSettings { get; set; }
         public virtual DbSet<HistoricalLog> HistoricalLogs { get; set; }
         public virtual DbSet<HistoricalOHLC> HistoricalOHLCs { get; set; }
+        public virtual DbSet<StrategyOption> StrategyOptions { get; set; }
     }
 }

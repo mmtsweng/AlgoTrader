@@ -38,6 +38,7 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnLogin = new System.Windows.Forms.ToolStripButton();
             this.btnBackfill = new System.Windows.Forms.ToolStripButton();
+            this.btnParameters = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -83,7 +84,8 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnLogin,
-            this.btnBackfill});
+            this.btnBackfill,
+            this.btnParameters});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(933, 25);
@@ -107,8 +109,19 @@
             this.btnBackfill.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnBackfill.Name = "btnBackfill";
             this.btnBackfill.Size = new System.Drawing.Size(23, 22);
-            this.btnBackfill.Text = "toolStripButton1";
+            this.btnBackfill.Text = "Backtest";
+            this.btnBackfill.ToolTipText = "Backtesting";
             this.btnBackfill.Click += new System.EventHandler(this.btnBackfill_Click);
+            // 
+            // btnParameters
+            // 
+            this.btnParameters.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnParameters.Image = global::AlgoTrader.AlgoResources._params;
+            this.btnParameters.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnParameters.Name = "btnParameters";
+            this.btnParameters.Size = new System.Drawing.Size(23, 22);
+            this.btnParameters.Text = "toolStripButton1";
+            this.btnParameters.ToolTipText = "Strategy Parameters";
             // 
             // frmMain
             // 
@@ -142,5 +155,6 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnLogin;
         private System.Windows.Forms.ToolStripButton btnBackfill;
+        private System.Windows.Forms.ToolStripButton btnParameters;
     }
 }

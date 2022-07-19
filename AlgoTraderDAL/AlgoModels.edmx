@@ -40,6 +40,15 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
           <Property Name="Timeframe" Type="datetime" />
           <Property Name="Timespan" Type="int" />
         </EntityType>
+        <EntityType Name="StrategyOptions">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Parameter" Type="varchar" MaxLength="255" />
+          <Property Name="Value" Type="varchar" MaxLength="512" />
+          <Property Name="StrategyName" Type="varchar" MaxLength="255" />
+        </EntityType>
         <EntityType Name="TDAKeys">
           <Key>
             <PropertyRef Name="id" />
@@ -61,6 +70,7 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
         <EntityContainer Name="AlgoTraderModelStoreContainer">
           <EntitySet Name="HistoricalLog" EntityType="Self.HistoricalLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HistoricalOHLC" EntityType="Self.HistoricalOHLC" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StrategyOptions" EntityType="Self.StrategyOptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TDAKeys" EntityType="Self.TDAKeys" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AlpacaSettings" EntityType="Self.AlpacaSettings" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -99,6 +109,7 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
           <EntitySet Name="AlpacaSettings" EntityType="AlgoTraderModel.AlpacaSetting" />
           <EntitySet Name="HistoricalLogs" EntityType="AlgoTraderModel.HistoricalLog" />
           <EntitySet Name="HistoricalOHLCs" EntityType="AlgoTraderModel.HistoricalOHLC" />
+          <EntitySet Name="StrategyOptions" EntityType="AlgoTraderModel.StrategyOption" />
         </EntityContainer>
         <EntityType Name="AlpacaSetting">
           <Key>
@@ -132,6 +143,15 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
           <Property Name="Volume" Type="Int64" />
           <Property Name="Timeframe" Type="DateTime" Precision="3" />
           <Property Name="Timespan" Type="Int32" />
+        </EntityType>
+        <EntityType Name="StrategyOption">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Parameter" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Value" Type="String" MaxLength="512" FixedLength="false" Unicode="false" />
+          <Property Name="StrategyName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -190,6 +210,16 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
                 <ScalarProperty Name="Close" ColumnName="Close" />
                 <ScalarProperty Name="Open" ColumnName="Open" />
                 <ScalarProperty Name="Symbol" ColumnName="Symbol" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StrategyOptions">
+            <EntityTypeMapping TypeName="AlgoTraderModel.StrategyOption">
+              <MappingFragment StoreEntitySet="StrategyOptions">
+                <ScalarProperty Name="StrategyName" ColumnName="StrategyName" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Parameter" ColumnName="Parameter" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

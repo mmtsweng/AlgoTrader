@@ -12,11 +12,13 @@ namespace AlgoTraderDAL.Types
         bool isIntraday { get; set; }
         int openPostions { get; set; }
         Analytics analytics { get; set; }
+        Dictionary<string, string> dbParameters {get; set;}
 
         void Init();
+        void UpdateParameters();
+
         Trade Next(OHLC ohlc);
         Trade Close(OHLC ohlc);
-
         bool BuySignal(OHLC ohlc);
         bool SellSignal(OHLC ohlc);
         Trade MakeTrade(OHLC ohlc, TradeSide side);

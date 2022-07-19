@@ -63,6 +63,16 @@ namespace AlgoTrader {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap _params {
+            get {
+                object obj = ResourceManager.GetObject("params", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap flat_history_icon {
             get {
                 object obj = ResourceManager.GetObject("flat_history_icon", resourceCulture);

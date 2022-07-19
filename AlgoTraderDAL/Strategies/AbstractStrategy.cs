@@ -13,6 +13,7 @@ namespace AlgoTraderDAL.Strategies
         public bool isIntraday { get; set; }
         public int openPostions { get; set; }
         public Analytics analytics { get; set; }
+        public virtual Dictionary<string, string> dbParameters { get; set; }
 
         public AbstractStrategy()
         {
@@ -40,6 +41,23 @@ namespace AlgoTraderDAL.Strategies
             this.canOpenMultiplePositons = false;
             this.openPostions = 0;
             this.analytics = new Analytics();
+            GetParametersFromDatabase();
+        }
+
+        internal void GetParametersFromDatabase()
+        {
+            using (Entities entities = new Entities())
+            {
+                string strategyName = this.GetType().Name;
+                this.dbParameters = entities.StrategyOptions
+                    .Where(s => s.StrategyName == strategyName)
+                    .ToDictionary(d => d.Parameter, d => d.Value);
+            }
+            UpdateParameters();
+        }
+
+        public virtual void UpdateParameters()
+        {
         }
 
         public virtual Trade MakeTrade(OHLC ohlc, TradeSide side)
