@@ -122,6 +122,7 @@
             this.btnParameters.Size = new System.Drawing.Size(23, 22);
             this.btnParameters.Text = "toolStripButton1";
             this.btnParameters.ToolTipText = "Strategy Parameters";
+            this.btnParameters.Click += new System.EventHandler(this.btnParameters_Click);
             // 
             // frmMain
             // 

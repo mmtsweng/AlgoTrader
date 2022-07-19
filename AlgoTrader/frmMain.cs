@@ -56,5 +56,12 @@ namespace AlgoTrader
             backfill.MdiParent = this;
             backfill.Show();
         }
+
+        private void btnParameters_Click(object sender, EventArgs e)
+        {
+            frmStrategyParams parameters = new frmStrategyParams();
+            parameters.MdiParent = this;
+            parameters.Show();
+        }
     }
 }
