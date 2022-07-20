@@ -15,7 +15,7 @@ namespace AlgoTrader
 
             //Set Market Close Time
             this.marketClose = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 15, 0, 0);
-            tmrMarket.Start();
+            //tmrMarket.Start();
         }
 
         private void tmrMarket_Tick(object sender, EventArgs e)

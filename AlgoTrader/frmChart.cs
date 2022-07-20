@@ -16,7 +16,22 @@ namespace AlgoTrader
 
         public void LoadOHLC(List<AlgoTraderDAL.Types.OHLC> ohlc)
         {
-            string filename = Application.StartupPath + @"chart_" + ohlc[0].Symbol;
+            System.TimeSpan timespan;
+            switch (ohlc[0].ticks)
+            {
+                case AlgoTraderDAL.Types.OHLC_TIMESPAN.MINUTE:
+                    timespan = new System.TimeSpan(0, 1, 0);
+                    break;
+                case AlgoTraderDAL.Types.OHLC_TIMESPAN.HOUR:
+                    timespan = new System.TimeSpan(1, 0, 0);
+                    break;
+                case AlgoTraderDAL.Types.OHLC_TIMESPAN.DAY:
+                    timespan = new System.TimeSpan(24, 0, 0);
+                    break;
+                default:
+                    timespan = new System.TimeSpan(1, 0, 0);
+                    break;
+            }
 
             ScottPlot.OHLC[] prices = ohlc.Select(p => new ScottPlot.OHLC(0,0,0,0,0)
             { 
@@ -25,6 +40,7 @@ namespace AlgoTrader
                 Low = decimal.ToDouble(p.Low),
                 Close = decimal.ToDouble(p.Close),
                 Volume = decimal.ToDouble(p.Volume),
+                TimeSpan = timespan,
                 DateTime = p.Timeframe
             }).ToArray();
 
