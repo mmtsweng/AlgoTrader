@@ -5,13 +5,11 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="AlgoTraderModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="AlpacaSettings">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="API_KEY" Type="varchar" MaxLength="255" />
           <Property Name="API_SECRET" Type="varchar" MaxLength="255" />
           <Property Name="API_URL" Type="varchar" MaxLength="255" />
@@ -68,19 +66,11 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
           <Property Name="accessTokenURL" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityContainer Name="AlgoTraderModelStoreContainer">
+          <EntitySet Name="AlpacaSettings" EntityType="Self.AlpacaSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HistoricalLog" EntityType="Self.HistoricalLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HistoricalOHLC" EntityType="Self.HistoricalOHLC" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StrategyOptions" EntityType="Self.StrategyOptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TDAKeys" EntityType="Self.TDAKeys" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AlpacaSettings" EntityType="Self.AlpacaSettings" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [AlpacaSettings].[Id] AS [Id], 
-    [AlpacaSettings].[API_KEY] AS [API_KEY], 
-    [AlpacaSettings].[API_SECRET] AS [API_SECRET], 
-    [AlpacaSettings].[API_URL] AS [API_URL], 
-    [AlpacaSettings].[PAPER_TRADING] AS [PAPER_TRADING]
-    FROM [dbo].[AlpacaSettings] AS [AlpacaSettings]</DefiningQuery>
-          </EntitySet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -106,21 +96,11 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
         </EntityType>
         <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="TDAKeys" EntityType="Self.TDAKey" />
-          <EntitySet Name="AlpacaSettings" EntityType="AlgoTraderModel.AlpacaSetting" />
           <EntitySet Name="HistoricalLogs" EntityType="AlgoTraderModel.HistoricalLog" />
           <EntitySet Name="HistoricalOHLCs" EntityType="AlgoTraderModel.HistoricalOHLC" />
           <EntitySet Name="StrategyOptions" EntityType="AlgoTraderModel.StrategyOption" />
+          <EntitySet Name="AlpacaSettings" EntityType="AlgoTraderModel.AlpacaSetting" />
         </EntityContainer>
-        <EntityType Name="AlpacaSetting">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="API_KEY" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="API_SECRET" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="API_URL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="PAPER_TRADING" Type="Boolean" />
-        </EntityType>
         <EntityType Name="HistoricalLog">
           <Key>
             <PropertyRef Name="Id" />
@@ -153,6 +133,16 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
           <Property Name="Value" Type="String" MaxLength="512" FixedLength="false" Unicode="false" />
           <Property Name="StrategyName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="AlpacaSetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="API_KEY" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="API_SECRET" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="API_URL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="PAPER_TRADING" Type="Boolean" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -175,17 +165,6 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
                 <ScalarProperty Name="consumerKey" ColumnName="consumerKey" />
                 <ScalarProperty Name="callbackURL" ColumnName="callbackURL" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="AlpacaSettings">
-            <EntityTypeMapping TypeName="AlgoTraderModel.AlpacaSetting">
-              <MappingFragment StoreEntitySet="AlpacaSettings">
-                <ScalarProperty Name="PAPER_TRADING" ColumnName="PAPER_TRADING" />
-                <ScalarProperty Name="API_URL" ColumnName="API_URL" />
-                <ScalarProperty Name="API_SECRET" ColumnName="API_SECRET" />
-                <ScalarProperty Name="API_KEY" ColumnName="API_KEY" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -220,6 +199,17 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.AlpacaSettings' does not have a p
                 <ScalarProperty Name="StrategyName" ColumnName="StrategyName" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Parameter" ColumnName="Parameter" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AlpacaSettings">
+            <EntityTypeMapping TypeName="AlgoTraderModel.AlpacaSetting">
+              <MappingFragment StoreEntitySet="AlpacaSettings">
+                <ScalarProperty Name="PAPER_TRADING" ColumnName="PAPER_TRADING" />
+                <ScalarProperty Name="API_URL" ColumnName="API_URL" />
+                <ScalarProperty Name="API_SECRET" ColumnName="API_SECRET" />
+                <ScalarProperty Name="API_KEY" ColumnName="API_KEY" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
