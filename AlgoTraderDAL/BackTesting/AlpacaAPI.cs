@@ -35,15 +35,47 @@ namespace AlgoTraderDAL
         /// <returns></returns>
         private async Task<List<OHLC>> Get_TickerDataAsync(string ticker, DateTime from, DateTime to, OHLC_TIMESPAN ticks)
         {
+            List<OHLC> result = new List<OHLC>();
+
+            //Standare Equity Call
             BarTimeFrame btf = ConvertOHLCToBar(ticks);
 
-            List<OHLC> result = new List<OHLC>();
             if ((bool)this.setting.PAPER_TRADING)
             {
                 var client = Environments.Paper.GetAlpacaDataClient(new SecretKey(this.setting.API_KEY, this.setting.API_SECRET));
                 try
                 {
                     var req = new HistoricalBarsRequest(ticker, DateTime.SpecifyKind(from, DateTimeKind.Utc), DateTime.SpecifyKind(to, DateTimeKind.Utc), btf).WithPageSize(9000);
+                    var page = await client.ListHistoricalBarsAsync(req).ConfigureAwait(false);
+                    foreach (var bar in page.Items)
+                    {
+                        OHLC ohlc = new OHLC();
+                        ohlc.parseIBar(bar);
+                        ohlc.ticks = ticks;
+                        result.Add(ohlc);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            
+
+            return result;
+        }
+
+        private async Task<List<OHLC>> Get_CryptoTickerDataAsync(string ticker, DateTime from, DateTime to, OHLC_TIMESPAN ticks)
+        {
+            BarTimeFrame btf = ConvertOHLCToBar(ticks);
+
+            List<OHLC> result = new List<OHLC>();
+            if ((bool)this.setting.PAPER_TRADING)
+            {
+                var client = Environments.Paper.GetAlpacaCryptoDataClient(new SecretKey(this.setting.API_KEY, this.setting.API_SECRET));
+                try
+                {
+                    var req = new HistoricalCryptoBarsRequest(ticker, DateTime.SpecifyKind(from, DateTimeKind.Utc), DateTime.SpecifyKind(to, DateTimeKind.Utc), btf).WithPageSize(9000);
                     var page = await client.ListHistoricalBarsAsync(req).ConfigureAwait(false);
                     foreach (var bar in page.Items)
                     {
@@ -105,7 +137,15 @@ namespace AlgoTraderDAL
             //If we didn't get database data, query API for the data
             if (!hasDBData)
             {
-                result = Get_TickerDataAsync(ticker, from, to, ticks).GetAwaiter().GetResult();
+                if (ticker.Contains(":"))
+                {
+                    //Crypto Call
+                    result = Get_CryptoTickerDataAsync(ticker.Substring(ticker.IndexOf(':') + 1), from, to, ticks).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    result = Get_TickerDataAsync(ticker, from, to, ticks).GetAwaiter().GetResult();
+                }
                 SaveBackfill(ticker, (int)ticks, from, to, result);
             }
             return result;
