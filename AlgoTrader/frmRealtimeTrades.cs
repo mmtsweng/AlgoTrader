@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Linq;
@@ -12,11 +13,13 @@ namespace AlgoTrader
     public partial class frmRealtimeTrades : Form
     {
         private List<AlgoTraderDAL.Types.OHLC> ohlc = new List<AlgoTraderDAL.Types.OHLC>();
+        private List<AlgoTraderDAL.Types.OHLC> ohlcHistory = new List<AlgoTraderDAL.Types.OHLC>();
 
         public frmRealtimeTrades()
         {
             InitializeComponent();
-            this.txtSymbol.Text = "SPY";
+            this.txtSymbol.Text = "ETHUSD";
+            this.chkCrypto.Checked = true;
         }
 
         /// <summary>
@@ -26,7 +29,7 @@ namespace AlgoTrader
         /// <param name="e"></param>
         private void btnTest_Click(object sender, EventArgs e)
         {
-            RealtimeAlpacaAPI.Instance.Start(this.txtSymbol.Text);
+            RealtimeAlpacaAPI.Instance.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
             this.btnTest.Enabled = false;
         }
 
@@ -59,7 +62,7 @@ namespace AlgoTrader
         /// <param name="bars"></param>
         public void OHLCRefreshDataReceived (object sender, List<AlgoTraderDAL.Types.OHLC> bars)
         {
-            this.ohlc = bars;
+            this.ohlcHistory = bars;
             this.pltChart.Invoke((MethodInvoker)delegate { UpdateChart(); });
         }
 
@@ -68,6 +71,16 @@ namespace AlgoTrader
         /// </summary>
         private void UpdateChart()
         {
+            ScottPlot.OHLC[] historicalPrices = ohlcHistory.Select(p => new ScottPlot.OHLC(0, 0, 0, 0, 0)
+            {
+                Open = decimal.ToDouble(p.Open),
+                High = decimal.ToDouble(p.High),
+                Low = decimal.ToDouble(p.Low),
+                Close = decimal.ToDouble(p.Close),
+                Volume = decimal.ToDouble(p.Volume),
+                TimeSpan = new TimeSpan(0, 1, 0),
+                DateTime = p.Timeframe
+            }).ToArray();
             ScottPlot.OHLC[] prices = ohlc.Select(p => new ScottPlot.OHLC(0, 0, 0, 0, 0)
             {
                 Open = decimal.ToDouble(p.Open),
@@ -81,6 +94,10 @@ namespace AlgoTrader
 
             var plt = new ScottPlot.Plot(800, 600);
             this.pltChart.Plot.Clear();
+            var hplot = this.pltChart.Plot.AddCandlesticks(historicalPrices);
+            hplot.WickColor = Color.LightGray ;
+            hplot.ColorDown = Color.LightGray;
+            hplot.ColorUp = Color.LightGray;
             var cplot = this.pltChart.Plot.AddCandlesticks(prices);
             this.pltChart.Plot.XAxis.DateTimeFormat(true);
             this.pltChart.Refresh();

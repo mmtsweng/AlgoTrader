@@ -20,9 +20,12 @@ namespace AlgoTraderDAL.Live
         private AlpacaSetting setting { get; set; }
         private IAlpacaTradingClient alpacaTradingClient { get; set; }
         private IAlpacaDataStreamingClient alpacaDataStreamingClient { get; set; }
+        public IAlpacaCryptoStreamingClient alpacaCryptoStreamingClient { get; set; }
         private IAlpacaDataClient alpacaDataClient { get; set; }
+        public IAlpacaCryptoDataClient AlpacaCryptoDataClient { get; set; }
         private IIntervalCalendar marketCalendar { get; set; }
         public IStrategy strategy { get; set; }
+        public bool isCrypto { get; set; }
         public event EventHandler<OHLC> OHLCReceived;
         public event EventHandler<List<OHLC>> OHLCRefresh;
         public string symbol { get; set; }
@@ -37,11 +40,16 @@ namespace AlgoTraderDAL.Live
             {
                 this.setting = entities.AlpacaSettings.FirstOrDefault();
             }
-            alpacaTradingClient = Environments.Paper.GetAlpacaTradingClient(new SecretKey(setting.API_KEY, setting.API_SECRET));
-            alpacaDataStreamingClient = Environments.Paper.GetAlpacaDataStreamingClient(new SecretKey(setting.API_KEY, setting.API_SECRET));
-            alpacaDataClient = Environments.Paper.GetAlpacaDataClient(new SecretKey(setting.API_KEY, setting.API_SECRET));
+            SecretKey key = new SecretKey(setting.API_KEY, setting.API_SECRET);
+            this.alpacaTradingClient = Environments.Paper.GetAlpacaTradingClient(key);
+            this.alpacaDataStreamingClient = Environments.Paper.GetAlpacaDataStreamingClient(key);
+            this.alpacaDataClient = Environments.Paper.GetAlpacaDataClient(key);
+
+            this.alpacaCryptoStreamingClient = Environments.Paper.GetAlpacaCryptoStreamingClient(key);
+            this.AlpacaCryptoDataClient = Environments.Paper.GetAlpacaCryptoDataClient(key);
 
             this.strategy = new SimpleMomentum();
+            this.isCrypto = false;
             this.strategy.Init();
 
         }
@@ -60,9 +68,10 @@ namespace AlgoTraderDAL.Live
         /// Start Realtime tracking request from external
         /// </summary>
         /// <param name="symbol"></param>
-        public async void Start(string symbol)
+        public async void Start(string symbol, bool isCrypto)
         {
             this.symbol = symbol;
+            this.isCrypto = isCrypto;
             await Run();
         }
 
@@ -74,16 +83,27 @@ namespace AlgoTraderDAL.Live
         {
             try
             {
-                await alpacaDataStreamingClient.ConnectAndAuthenticateAsync();
                 await GetMarketHours();
                 var hours = this.marketCalendar.Trading.ToInterval();
 
-                // await GetTodaysTickerData();
+                await GetTodaysTickerData();
 
-                //Connect to Alpaca's websocket and listen for price updates
-                var subscription = alpacaDataStreamingClient.GetMinuteBarSubscription(symbol);
-                subscription.Received += async bar => { ProcessBar(bar); };
-                await alpacaDataStreamingClient.SubscribeAsync(subscription);
+                if (this.isCrypto)
+                {
+                    //Crypto Trading
+                    await alpacaCryptoStreamingClient.ConnectAndAuthenticateAsync();
+                    var subscription = this.alpacaCryptoStreamingClient.GetMinuteBarSubscription(symbol);
+                    subscription.Received += async bar => { ProcessBar(bar); };
+                    await alpacaCryptoStreamingClient.SubscribeAsync(subscription);
+                }
+                else
+                {
+                    //Securities Trading
+                    await alpacaDataStreamingClient.ConnectAndAuthenticateAsync();
+                    var subscription = alpacaDataStreamingClient.GetMinuteBarSubscription(symbol);
+                    subscription.Received += async bar => { ProcessBar(bar); };
+                    await this.alpacaCryptoStreamingClient.SubscribeAsync(subscription);
+                }
             }
             catch (Exception ex)
             {
@@ -98,17 +118,35 @@ namespace AlgoTraderDAL.Live
         /// <returns></returns>
         private async Task GetTodaysTickerData()
         {
-            var bars = await alpacaDataClient.ListHistoricalBarsAsync(
-               new HistoricalBarsRequest(symbol, BarTimeFrame.Minute, marketCalendar.Trading));
-            List<OHLC> prices = bars.Items.ToList().Select(p => new OHLC()
+            List<OHLC> prices = new List<OHLC>();   
+            if (this.isCrypto)
             {
-                Open = p.Open,
-                High = p.High,
-                Low = p.Low,
-                Close = p.Close,
-                Volume = p.Volume,
-                Timeframe = p.TimeUtc.ToLocalTime()
-            }).ToList();
+                var bars = await AlpacaCryptoDataClient.ListHistoricalBarsAsync(
+                    new HistoricalCryptoBarsRequest(this.symbol, BarTimeFrame.Minute, marketCalendar.Trading));
+                prices = bars.Items.Select(p => new OHLC()
+                {
+                    Open = p.Open,
+                    High = p.High,
+                    Low = p.Low,
+                    Close = p.Close,
+                    Volume = p.Volume,
+                    Timeframe = p.TimeUtc.ToLocalTime()
+                }).ToList();
+            }
+            else
+            {
+                var bars = await alpacaDataClient.ListHistoricalBarsAsync(
+                   new HistoricalBarsRequest(symbol, BarTimeFrame.Minute, marketCalendar.Trading));
+                prices = bars.Items.ToList().Select(p => new OHLC()
+                {
+                    Open = p.Open,
+                    High = p.High,
+                    Low = p.Low,
+                    Close = p.Close,
+                    Volume = p.Volume,
+                    Timeframe = p.TimeUtc.ToLocalTime()
+                }).ToList();
+            }
 
             OHLCRefresh?.Invoke(this, prices);
         }

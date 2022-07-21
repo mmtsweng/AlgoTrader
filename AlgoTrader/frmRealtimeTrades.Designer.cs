@@ -33,11 +33,13 @@
             this.pltChart = new ScottPlot.FormsPlot();
             this.label1 = new System.Windows.Forms.Label();
             this.txtSymbol = new System.Windows.Forms.TextBox();
+            this.chkCrypto = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnTest
             // 
-            this.btnTest.Location = new System.Drawing.Point(177, 12);
+            this.btnTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnTest.Location = new System.Drawing.Point(581, 14);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(75, 23);
             this.btnTest.TabIndex = 0;
@@ -53,7 +55,7 @@
             this.pltChart.Location = new System.Drawing.Point(12, 37);
             this.pltChart.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pltChart.Name = "pltChart";
-            this.pltChart.Size = new System.Drawing.Size(572, 291);
+            this.pltChart.Size = new System.Drawing.Size(664, 295);
             this.pltChart.TabIndex = 1;
             // 
             // label1
@@ -72,11 +74,24 @@
             this.txtSymbol.Size = new System.Drawing.Size(100, 23);
             this.txtSymbol.TabIndex = 3;
             // 
+            // chkCrypto
+            // 
+            this.chkCrypto.AutoSize = true;
+            this.chkCrypto.Checked = true;
+            this.chkCrypto.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkCrypto.Location = new System.Drawing.Point(177, 14);
+            this.chkCrypto.Name = "chkCrypto";
+            this.chkCrypto.Size = new System.Drawing.Size(78, 19);
+            this.chkCrypto.TabIndex = 4;
+            this.chkCrypto.Text = "Is Crypto?";
+            this.chkCrypto.UseVisualStyleBackColor = true;
+            // 
             // frmRealtimeTrades
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(597, 331);
+            this.ClientSize = new System.Drawing.Size(689, 335);
+            this.Controls.Add(this.chkCrypto);
             this.Controls.Add(this.txtSymbol);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pltChart);
@@ -97,5 +112,6 @@
         private ScottPlot.FormsPlot pltChart;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtSymbol;
+        private System.Windows.Forms.CheckBox chkCrypto;
     }
 }
