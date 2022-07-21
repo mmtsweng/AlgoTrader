@@ -24,7 +24,6 @@ namespace AlgoTraderDAL.Live
         private IAlpacaDataClient alpacaDataClient { get; set; }
         public IAlpacaCryptoDataClient AlpacaCryptoDataClient { get; set; }
         private IIntervalCalendar marketCalendar { get; set; }
-        public IStrategy strategy { get; set; }
         public bool isCrypto { get; set; }
         public event EventHandler<OHLC> OHLCReceived;
         public event EventHandler<List<OHLC>> OHLCRefresh;
@@ -47,11 +46,7 @@ namespace AlgoTraderDAL.Live
 
             this.alpacaCryptoStreamingClient = Environments.Paper.GetAlpacaCryptoStreamingClient(key);
             this.AlpacaCryptoDataClient = Environments.Paper.GetAlpacaCryptoDataClient(key);
-
-            this.strategy = new SimpleMomentum();
             this.isCrypto = false;
-            this.strategy.Init();
-
         }
 
         /// <summary>
@@ -68,26 +63,30 @@ namespace AlgoTraderDAL.Live
         /// Start Realtime tracking request from external
         /// </summary>
         /// <param name="symbol"></param>
+        public async void Init()
+        {
+            await GetMarketHours();
+            var hours = this.marketCalendar.Trading.ToInterval();
+        }
+
+        /// <summary>
+        /// Start listening for streaming data
+        /// </summary>
         public async void Start(string symbol, bool isCrypto)
         {
             this.symbol = symbol;
             this.isCrypto = isCrypto;
-            await Run();
+            await SetupSubscriptions();
         }
 
         /// <summary>
         /// Internal async process to run realtime API calls
         /// </summary>
         /// <returns></returns>
-        private async Task Run()
+        private async Task SetupSubscriptions()
         {
             try
             {
-                await GetMarketHours();
-                var hours = this.marketCalendar.Trading.ToInterval();
-
-                await GetTodaysTickerData();
-
                 if (this.isCrypto)
                 {
                     //Crypto Trading
@@ -113,11 +112,20 @@ namespace AlgoTraderDAL.Live
         }
 
         /// <summary>
+        /// Method to request historical data
+        /// </summary>
+        public async void RequestTodayHistoricalTickerData()
+        {
+            await GetTodaysTickerData();
+        }
+
+        /// <summary>
         /// Get the first group of bars since the market has been open.
         /// </summary>
         /// <returns></returns>
         private async Task GetTodaysTickerData()
         {
+            if (this.marketCalendar == null) { return; } //async protection
             List<OHLC> prices = new List<OHLC>();   
             if (this.isCrypto)
             {
@@ -157,6 +165,7 @@ namespace AlgoTraderDAL.Live
         public void StopListening()
         {
             var task = Task.Run(async () => { await this.alpacaDataStreamingClient.DisconnectAsync(); return; });
+            task = Task.Run(async () => { await this.alpacaCryptoStreamingClient.DisconnectAsync(); return; });
         }
 
         /// <summary>
@@ -177,6 +186,8 @@ namespace AlgoTraderDAL.Live
                 ticks = OHLC_TIMESPAN.MINUTE
             };
 
+
+
             OHLCReceived?.Invoke(this, ohlc);
         }
 
@@ -186,7 +197,7 @@ namespace AlgoTraderDAL.Live
         /// <returns></returns>
         private async Task GetMarketHours()
         {
-            marketCalendar = (await alpacaTradingClient
+            this.marketCalendar = (await alpacaTradingClient
                 .ListIntervalCalendarAsync(new CalendarRequest().WithInterval(DateTime.Today.GetIntervalFromThat())))
                 .FirstOrDefault();
         }

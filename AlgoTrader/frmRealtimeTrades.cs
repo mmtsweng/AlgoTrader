@@ -14,6 +14,7 @@ namespace AlgoTrader
     {
         private List<AlgoTraderDAL.Types.OHLC> ohlc = new List<AlgoTraderDAL.Types.OHLC>();
         private List<AlgoTraderDAL.Types.OHLC> ohlcHistory = new List<AlgoTraderDAL.Types.OHLC>();
+        private RealtimeStrategyExecutor StrategyExecutor = new RealtimeStrategyExecutor();
 
         public frmRealtimeTrades()
         {
@@ -30,6 +31,9 @@ namespace AlgoTrader
         private void btnTest_Click(object sender, EventArgs e)
         {
             RealtimeAlpacaAPI.Instance.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
+
+            RealtimeAlpacaAPI.Instance.RequestTodayHistoricalTickerData();
+            //this.StrategyExecutor.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
             this.btnTest.Enabled = false;
         }
 
@@ -40,6 +44,7 @@ namespace AlgoTrader
         /// <param name="e"></param>
         private void frmRealtimeTrades_Load(object sender, EventArgs e)
         {
+            RealtimeAlpacaAPI.Instance.Init();
             RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
             RealtimeAlpacaAPI.Instance.OHLCRefresh += OHLCRefreshDataReceived;
         }
