@@ -33,7 +33,7 @@ namespace AlgoTrader
             RealtimeAlpacaAPI.Instance.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
 
             RealtimeAlpacaAPI.Instance.RequestTodayHistoricalTickerData();
-            //this.StrategyExecutor.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
+            this.StrategyExecutor.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
             this.btnTest.Enabled = false;
         }
 
@@ -47,6 +47,7 @@ namespace AlgoTrader
             RealtimeAlpacaAPI.Instance.Init();
             RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
             RealtimeAlpacaAPI.Instance.OHLCRefresh += OHLCRefreshDataReceived;
+            this.StrategyExecutor.TradeOccurred += TradeSignal;
         }
 
         /// <summary>
@@ -68,6 +69,12 @@ namespace AlgoTrader
         public void OHLCRefreshDataReceived (object sender, List<AlgoTraderDAL.Types.OHLC> bars)
         {
             this.ohlcHistory = bars;
+            this.pltChart.Invoke((MethodInvoker)delegate { UpdateChart(); });
+        }
+
+        public void TradeSignal(object sender, AlgoTraderDAL.Trade trade)
+        {
+            this.StrategyExecutor.portfolio.trades.Add(trade);
             this.pltChart.Invoke((MethodInvoker)delegate { UpdateChart(); });
         }
 
@@ -97,12 +104,36 @@ namespace AlgoTrader
                 DateTime = p.Timeframe
             }).ToArray();
 
+            double[] buytimes = this.StrategyExecutor.portfolio.trades
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.BUY)
+                .Select(x => x.transactionDateTime.ToOADate()).ToArray();
+            double[] buys = this.StrategyExecutor.portfolio.trades
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.BUY)
+                .Select(x => (double)x.actualPrice).ToArray();
+            double[] saletimes = this.StrategyExecutor.portfolio.trades
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.BUY)
+                .Select(x => x.transactionDateTime.ToOADate()).ToArray();
+            double[] sales = this.StrategyExecutor.portfolio.trades
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.SELL)
+                .Select(x => (double)x.actualPrice).ToArray();
+
+
+
             var plt = new ScottPlot.Plot(800, 600);
             this.pltChart.Plot.Clear();
             var hplot = this.pltChart.Plot.AddCandlesticks(historicalPrices);
             hplot.WickColor = Color.LightGray ;
             hplot.ColorDown = Color.LightGray;
             hplot.ColorUp = Color.LightGray;
+
+            if (buys.Length > 0)
+            {
+                this.pltChart.Plot.AddScatterPoints(buytimes, buys, Color.DarkGreen, markerShape: ScottPlot.MarkerShape.filledTriangleUp, markerSize: 10);
+            }
+            if (sales.Length > 0)
+            {
+                this.pltChart.Plot.AddScatterPoints(saletimes, sales, Color.DarkRed, markerShape: ScottPlot.MarkerShape.filledTriangleDown, markerSize: 10);
+            }
             var cplot = this.pltChart.Plot.AddCandlesticks(prices);
             this.pltChart.Plot.XAxis.DateTimeFormat(true);
             this.pltChart.Refresh();

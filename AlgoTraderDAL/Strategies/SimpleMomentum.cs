@@ -18,7 +18,13 @@ namespace AlgoTraderDAL.Strategies
 
         public SimpleMomentum()
         {
-            this.isIntraday = true;
+            base.isIntraday = true;
+        }
+
+        public SimpleMomentum(bool isLiveTrading)
+        {
+            base.isLiveTrading = isLiveTrading;
+            base.isIntraday = true;
         }
 
         /// <summary>
@@ -38,15 +44,25 @@ namespace AlgoTraderDAL.Strategies
         public override void UpdateParameters()
         {
             base.UpdateParameters();
-            int parsedQue = 0;
-            if (int.TryParse(this.dbParameters["QueueSize"], out parsedQue))
+            int parsedVal = 0;
+            if (int.TryParse(this.dbParameters["QueueSize"], out parsedVal))
             {
-                this.QueueSize = parsedQue;
+                this.QueueSize = parsedVal;
             }
             else 
             {
                 this.QueueSize = 5;
             }
+
+            if (int.TryParse(this.dbParameters["MaxOpenPositions"], out parsedVal))
+            {
+                this.maxOpenPositions = parsedVal;
+            }
+            else
+            {
+                this.QueueSize = 5;
+            }
+
         }
 
         /// <summary>
@@ -94,7 +110,7 @@ namespace AlgoTraderDAL.Strategies
         /// </summary>
         /// <param name="ohlc"></param>
         /// <returns></returns>
-        public override bool BuySignal(OHLC ohlc)
+        public override bool BuySignal()
         {
             if (openTrend != null && closeTrend != null)
             {
@@ -111,7 +127,7 @@ namespace AlgoTraderDAL.Strategies
         /// </summary>
         /// <param name="ohlc"></param>
         /// <returns></returns>
-        public override bool SellSignal(OHLC ohlc)
+        public override bool SellSignal()
         {
             if (openTrend != null && closeTrend != null)
             {

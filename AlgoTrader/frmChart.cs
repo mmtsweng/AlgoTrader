@@ -55,5 +55,10 @@ namespace AlgoTrader
             this.pltChart.Refresh();
 
         }
+
+        private void frmChart_Load(object sender, System.EventArgs e)
+        {
+
+        }
     }
 }

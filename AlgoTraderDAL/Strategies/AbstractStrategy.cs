@@ -11,16 +11,22 @@ namespace AlgoTraderDAL.Strategies
     {
         public bool canOpenMultiplePositons { get; set; }
         public bool isIntraday { get; set; }
+        public bool isSellable { get { return openPostions > 0; } }
+        public bool isBuyable { get { return openPostions <= maxOpenPositions; } }
+        internal bool isLiveTrading { get; set; }
         public int openPostions { get; set; }
         public Analytics analytics { get; set; }
         public virtual Dictionary<string, string> dbParameters { get; set; }
+        public int maxOpenPositions { get; set; }
 
         public AbstractStrategy()
         {
             this.isIntraday = false;
+            this.isLiveTrading = false;
+            this.maxOpenPositions = 1;
         }
 
-        public virtual bool BuySignal(OHLC ohlc)
+        public virtual bool BuySignal()
         {
             throw new NotImplementedException();
         }
@@ -76,29 +82,32 @@ namespace AlgoTraderDAL.Strategies
         public virtual Trade Next(OHLC ohlc)
         {
             Trade trade = new Trade();
-            if (this.canOpenMultiplePositons || this.openPostions < 1)
-            {
-                if (this.BuySignal(ohlc))
+            if (!isLiveTrading)
+            {                
+                if (this.canOpenMultiplePositons || this.openPostions < this.maxOpenPositions)
                 {
-                    trade = MakeTrade(ohlc, TradeSide.BUY);
-                    this.openPostions++;
-                    return trade;
+                    if (this.BuySignal())
+                    {
+                        trade = MakeTrade(ohlc, TradeSide.BUY);
+                        this.openPostions++;
+                        return trade;
+                    }
                 }
-            }
 
-            if (this.openPostions > 0)
-            {
-                if (this.SellSignal(ohlc))
+                if (this.openPostions > 0)
                 {
-                    trade = MakeTrade(ohlc, TradeSide.SELL);
-                    this.openPostions--;
+                    if (this.SellSignal())
+                    {
+                        trade = MakeTrade(ohlc, TradeSide.SELL);
+                        this.openPostions--;
+                    }
                 }
             }
 
             return trade;
         }
 
-        public virtual bool SellSignal(OHLC ohlc)
+        public virtual bool SellSignal()
         {
             throw new NotImplementedException();
         }

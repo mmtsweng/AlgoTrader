@@ -19,13 +19,13 @@ namespace AlgoTraderDAL.Strategies
             base.Init();
         }
 
-        public override bool BuySignal(OHLC ohlc)
+        public override bool BuySignal()
         {
             int buyRnd = new Random().Next(10) + 1;
             return (buyRnd <= this.buyRate);
         }
 
-        public override bool SellSignal(OHLC ohlc)
+        public override bool SellSignal()
         {
             int sellRnd = new Random().Next(10) + 1;
             return (sellRnd <= this.sellRate);

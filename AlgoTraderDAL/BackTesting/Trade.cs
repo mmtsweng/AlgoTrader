@@ -24,6 +24,7 @@ namespace AlgoTraderDAL
 
     public class Trade
     {
+        public Guid TradeId { get; set; }
         public bool liveTrade { get; set; }
         public string symbol { get; set; }
         public string clientOrderID { get; set; }
@@ -32,7 +33,8 @@ namespace AlgoTraderDAL
         public decimal submittedPrice { get; set; }
         public decimal limitPrice { get; set; }
         public decimal stopLossPrice { get; set; }
-        public int quantity { get; set; }
+        public decimal quantity { get; set; }
+        public decimal dollarQuantity { get; set; }
         public DateTime transactionDateTime { get; set; }
         public TradeType type { get; set; }
         public TradeSide side { get; set; }
@@ -46,7 +48,7 @@ namespace AlgoTraderDAL
         {
             this.side = TradeSide.NONE;
             this.liveTrade = liveTrade;
-            this.active = false;
+            this.active = false; 
         }
     }
 }

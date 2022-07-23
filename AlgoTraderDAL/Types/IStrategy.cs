@@ -10,6 +10,11 @@ namespace AlgoTraderDAL.Types
     {
         bool canOpenMultiplePositons { get; set; }
         bool isIntraday { get; set; }
+
+        bool isBuyable { get; }
+
+        bool isSellable { get; }   
+
         int openPostions { get; set; }
         Analytics analytics { get; set; }
         Dictionary<string, string> dbParameters {get; set;}
@@ -19,8 +24,8 @@ namespace AlgoTraderDAL.Types
 
         Trade Next(OHLC ohlc);
         Trade Close(OHLC ohlc);
-        bool BuySignal(OHLC ohlc);
-        bool SellSignal(OHLC ohlc);
+        bool BuySignal();
+        bool SellSignal();
         Trade MakeTrade(OHLC ohlc, TradeSide side);
     }
 }

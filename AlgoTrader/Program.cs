@@ -18,7 +18,7 @@ namespace AlgoTrader
             {
                 Application.Run(new frmMain());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //Eat any last Exceptions
             }

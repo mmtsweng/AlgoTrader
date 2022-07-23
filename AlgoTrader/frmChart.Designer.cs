@@ -52,6 +52,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmChart";
             this.Text = "frmChart";
+            this.Load += new System.EventHandler(this.frmChart_Load);
             this.ResumeLayout(false);
 
         }

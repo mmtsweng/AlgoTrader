@@ -20,6 +20,7 @@ namespace AlgoTraderDAL.Live
         private AlpacaSetting setting { get; set; }
         private IAlpacaTradingClient alpacaTradingClient { get; set; }
         private IAlpacaDataStreamingClient alpacaDataStreamingClient { get; set; }
+        public IAlpacaStreamingClient alpacaStreamingClient { get; set; }
         public IAlpacaCryptoStreamingClient alpacaCryptoStreamingClient { get; set; }
         private IAlpacaDataClient alpacaDataClient { get; set; }
         public IAlpacaCryptoDataClient AlpacaCryptoDataClient { get; set; }
@@ -27,6 +28,7 @@ namespace AlgoTraderDAL.Live
         public bool isCrypto { get; set; }
         public event EventHandler<OHLC> OHLCReceived;
         public event EventHandler<List<OHLC>> OHLCRefresh;
+        public event EventHandler<AlgoTraderDAL.Trade> TradeCompleted;
         public string symbol { get; set; }
 
         /// <summary>
@@ -43,6 +45,7 @@ namespace AlgoTraderDAL.Live
             this.alpacaTradingClient = Environments.Paper.GetAlpacaTradingClient(key);
             this.alpacaDataStreamingClient = Environments.Paper.GetAlpacaDataStreamingClient(key);
             this.alpacaDataClient = Environments.Paper.GetAlpacaDataClient(key);
+            this.alpacaStreamingClient = Environments.Paper.GetAlpacaStreamingClient(key);
 
             this.alpacaCryptoStreamingClient = Environments.Paper.GetAlpacaCryptoStreamingClient(key);
             this.AlpacaCryptoDataClient = Environments.Paper.GetAlpacaCryptoDataClient(key);
@@ -80,38 +83,6 @@ namespace AlgoTraderDAL.Live
         }
 
         /// <summary>
-        /// Internal async process to run realtime API calls
-        /// </summary>
-        /// <returns></returns>
-        private async Task SetupSubscriptions()
-        {
-            try
-            {
-                if (this.isCrypto)
-                {
-                    //Crypto Trading
-                    await alpacaCryptoStreamingClient.ConnectAndAuthenticateAsync();
-                    var subscription = this.alpacaCryptoStreamingClient.GetMinuteBarSubscription(symbol);
-                    subscription.Received += async bar => { ProcessBar(bar); };
-                    await alpacaCryptoStreamingClient.SubscribeAsync(subscription);
-                }
-                else
-                {
-                    //Securities Trading
-                    await alpacaDataStreamingClient.ConnectAndAuthenticateAsync();
-                    var subscription = alpacaDataStreamingClient.GetMinuteBarSubscription(symbol);
-                    subscription.Received += async bar => { ProcessBar(bar); };
-                    await this.alpacaCryptoStreamingClient.SubscribeAsync(subscription);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-        }
-
-        /// <summary>
         /// Method to request historical data
         /// </summary>
         public async void RequestTodayHistoricalTickerData()
@@ -120,9 +91,83 @@ namespace AlgoTraderDAL.Live
         }
 
         /// <summary>
-        /// Get the first group of bars since the market has been open.
+        /// Process to submit a trade to Alpaca
+        /// </summary>
+        /// <param name="trade"></param>
+        public async void SubmitTrade(Trade trade)
+        {
+            OrderSide orderside = OrderSide.Buy;
+            switch (trade.side)
+            {
+                case TradeSide.NONE:
+                    return;  // Not a valid order
+                case TradeSide.BUY:
+                    orderside = OrderSide.Buy;
+                    break;
+                case TradeSide.SELL:
+                    orderside = OrderSide.Sell;
+                    break;
+                default:
+                    break;
+            }
+
+            var order = await alpacaTradingClient.PostOrderAsync(
+                orderside.Market(trade.symbol, (int)trade.quantity)
+                );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void StopListening()
+        {
+            this.CloseAllPositions();
+            var task = Task.Run(async () => { await this.alpacaDataStreamingClient.DisconnectAsync(); return; });
+            task = Task.Run(async () => { await this.alpacaCryptoStreamingClient.DisconnectAsync(); return; });
+        }
+
+        /// <summary>
+        /// Close all existing open positions
+        /// </summary>
+        public void CloseAllPositions()
+        {
+            try
+            {
+                var positionQuantity = alpacaTradingClient.GetPositionAsync(symbol).GetAwaiter().GetResult().IntegerQuantity;
+                if (positionQuantity > 0)
+                {
+                    alpacaTradingClient.PostOrderAsync(
+                        OrderSide.Sell.Market(symbol, positionQuantity))
+                        .GetAwaiter().GetResult();
+                }
+            }
+            catch (Exception ex) 
+            {
+                // No position to exit.
+            }
+        }
+
+        /// <summary>
+        /// Get Existing Portfolio information
         /// </summary>
         /// <returns></returns>
+        public Portfolio GetPortfolio()
+        {
+            var account = alpacaTradingClient.GetAccountAsync().GetAwaiter().GetResult();
+
+            Portfolio portfolio = new Portfolio(account.TradableCash);
+            portfolio.accountNumber = account.AccountNumber;
+            portfolio.accountTradable = (!account.IsTradingBlocked && !account.IsAccountBlocked);
+
+            return portfolio;
+        }
+
+        /*
+         * 
+         * Private Members Below
+         * 
+         */
+
         private async Task GetTodaysTickerData()
         {
             if (this.marketCalendar == null) { return; } //async protection
@@ -160,12 +205,77 @@ namespace AlgoTraderDAL.Live
         }
 
         /// <summary>
-        /// 
+        /// Internal async process to run realtime API calls
         /// </summary>
-        public void StopListening()
+        /// <returns></returns>
+        private async Task SetupSubscriptions()
         {
-            var task = Task.Run(async () => { await this.alpacaDataStreamingClient.DisconnectAsync(); return; });
-            task = Task.Run(async () => { await this.alpacaCryptoStreamingClient.DisconnectAsync(); return; });
+            try
+            {
+                if (this.isCrypto)
+                {
+                    //Crypto Trading
+                    await alpacaCryptoStreamingClient.ConnectAndAuthenticateAsync();
+                    var tradesubscription = this.alpacaCryptoStreamingClient.GetTradeSubscription(symbol);
+
+                    await this.alpacaStreamingClient.ConnectAndAuthenticateAsync();
+                    this.alpacaStreamingClient.OnTradeUpdate += async t => { ProcessTrade(t); };
+
+                    var subscription = this.alpacaCryptoStreamingClient.GetMinuteBarSubscription(symbol);
+                    subscription.Received += async bar => { ProcessBar(bar); };
+                    await alpacaCryptoStreamingClient.SubscribeAsync(subscription);
+                }
+                else
+                {
+                    //Securities Trading
+                    await alpacaDataStreamingClient.ConnectAndAuthenticateAsync();
+                    var subscription = alpacaDataStreamingClient.GetMinuteBarSubscription(symbol);
+                    subscription.Received += async bar => { ProcessBar(bar); };
+                    await this.alpacaCryptoStreamingClient.SubscribeAsync(subscription);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        /// <summary>
+        /// We have received confirmation of a trade from ALPACA. Process it.
+        /// </summary>
+        /// <param name="trade"></param>
+        private async void ProcessTrade(ITradeUpdate trade)
+        {
+            if (trade.Event == TradeEvent.Fill)
+            {
+                TradeSide tradeside = TradeSide.NONE;
+                switch (trade.Order.OrderSide)
+                {
+                    case OrderSide.Buy:
+                        tradeside = TradeSide.BUY;
+                        break;
+                    case OrderSide.Sell:
+                        tradeside = TradeSide.SELL;
+                        break;
+                    default:
+                        tradeside = TradeSide.NONE;
+                        break;
+                }
+
+                Trade completedTrade = new Trade(true)
+                {
+                    TradeId = trade.Order.OrderId,
+                    symbol = trade.Order.Symbol,
+                    quantity = trade.Order.Quantity.GetValueOrDefault(),
+                    transactionDateTime = trade.TimestampUtc.GetValueOrDefault().ToLocalTime(),
+                    actualPrice = trade.Order.AverageFillPrice.GetValueOrDefault(),
+                    side = tradeside
+                };
+
+                TradeCompleted?.Invoke(this, completedTrade);
+            }
+            
         }
 
         /// <summary>
@@ -185,8 +295,6 @@ namespace AlgoTraderDAL.Live
                 Timeframe = bar.TimeUtc.ToLocalTime(),
                 ticks = OHLC_TIMESPAN.MINUTE
             };
-
-
 
             OHLCReceived?.Invoke(this, ohlc);
         }
