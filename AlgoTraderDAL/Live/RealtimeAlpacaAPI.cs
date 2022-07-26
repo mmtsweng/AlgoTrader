@@ -25,6 +25,8 @@ namespace AlgoTraderDAL.Live
         private IAlpacaDataClient alpacaDataClient { get; set; }
         public IAlpacaCryptoDataClient AlpacaCryptoDataClient { get; set; }
         private IIntervalCalendar marketCalendar { get; set; }
+        private IBar lastBarReceived { get; set; }
+
         public bool isCrypto { get; set; }
         public event EventHandler<OHLC> OHLCReceived;
         public event EventHandler<List<OHLC>> OHLCRefresh;
@@ -215,22 +217,20 @@ namespace AlgoTraderDAL.Live
                 if (this.isCrypto)
                 {
                     //Crypto Trading
-                    await alpacaCryptoStreamingClient.ConnectAndAuthenticateAsync();
-                    var tradesubscription = this.alpacaCryptoStreamingClient.GetTradeSubscription(symbol);
-
+                    await this.alpacaCryptoStreamingClient.ConnectAndAuthenticateAsync();
                     await this.alpacaStreamingClient.ConnectAndAuthenticateAsync();
                     this.alpacaStreamingClient.OnTradeUpdate += async t => { ProcessTrade(t); };
 
                     var subscription = this.alpacaCryptoStreamingClient.GetMinuteBarSubscription(symbol);
-                    subscription.Received += async bar => { ProcessBar(bar); };
-                    await alpacaCryptoStreamingClient.SubscribeAsync(subscription);
+                    subscription.Received += bar => { ProcessBar(bar); };
+                    await this.alpacaCryptoStreamingClient.SubscribeAsync(subscription);
                 }
                 else
                 {
                     //Securities Trading
-                    await alpacaDataStreamingClient.ConnectAndAuthenticateAsync();
-                    var subscription = alpacaDataStreamingClient.GetMinuteBarSubscription(symbol);
-                    subscription.Received += async bar => { ProcessBar(bar); };
+                    await this.alpacaDataStreamingClient.ConnectAndAuthenticateAsync();
+                    var subscription = this.alpacaDataStreamingClient.GetMinuteBarSubscription(symbol);
+                    subscription.Received += bar => { ProcessBar(bar); };
                     await this.alpacaCryptoStreamingClient.SubscribeAsync(subscription);
                 }
             }
@@ -284,6 +284,15 @@ namespace AlgoTraderDAL.Live
         /// <param name="bar"></param>
         private async void ProcessBar(IBar bar)
         {
+            if (this.lastBarReceived != null && this.lastBarReceived.TimeUtc.Equals(bar.TimeUtc))
+            {
+                return;
+            }
+            else
+            {
+                this.lastBarReceived = bar;
+            }
+
             OHLC ohlc = new OHLC()
             {
                 Symbol = bar.Symbol,

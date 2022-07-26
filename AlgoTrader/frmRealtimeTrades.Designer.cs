@@ -98,7 +98,7 @@
             this.Controls.Add(this.btnTest);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmRealtimeTrades";
-            this.Text = "frmRealtimeTrades";
+            this.Text = "Realtime Trading";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmRealtimeTrades_FormClosing);
             this.Load += new System.EventHandler(this.frmRealtimeTrades_Load);
             this.ResumeLayout(false);

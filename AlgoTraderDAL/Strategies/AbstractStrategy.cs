@@ -12,7 +12,7 @@ namespace AlgoTraderDAL.Strategies
         public bool canOpenMultiplePositons { get; set; }
         public bool isIntraday { get; set; }
         public bool isSellable { get { return openPostions > 0; } }
-        public bool isBuyable { get { return openPostions <= maxOpenPositions; } }
+        public bool isBuyable { get { return openPostions < maxOpenPositions; } }
         internal bool isLiveTrading { get; set; }
         public int openPostions { get; set; }
         public Analytics analytics { get; set; }

@@ -81,7 +81,7 @@ namespace AlgoTrader
         /// <summary>
         /// Update the chart with current data
         /// </summary>
-        private void UpdateChart()
+        private void UpdateChart(bool clearFirst = false)
         {
             ScottPlot.OHLC[] historicalPrices = ohlcHistory.Select(p => new ScottPlot.OHLC(0, 0, 0, 0, 0)
             {
@@ -111,13 +111,11 @@ namespace AlgoTrader
                 .Where(x => x.side == AlgoTraderDAL.TradeSide.BUY)
                 .Select(x => (double)x.actualPrice).ToArray();
             double[] saletimes = this.StrategyExecutor.portfolio.trades
-                .Where(x => x.side == AlgoTraderDAL.TradeSide.BUY)
+                .Where(x => x.side == AlgoTraderDAL.TradeSide.SELL)
                 .Select(x => x.transactionDateTime.ToOADate()).ToArray();
             double[] sales = this.StrategyExecutor.portfolio.trades
                 .Where(x => x.side == AlgoTraderDAL.TradeSide.SELL)
                 .Select(x => (double)x.actualPrice).ToArray();
-
-
 
             var plt = new ScottPlot.Plot(800, 600);
             this.pltChart.Plot.Clear();
