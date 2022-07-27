@@ -19,7 +19,7 @@ namespace AlgoTrader
         public frmRealtimeTrades()
         {
             InitializeComponent();
-            this.txtSymbol.Text = "ETHUSD";
+            this.txtSymbol.Text = "SOLUSD";
             this.chkCrypto.Checked = true;
         }
 
@@ -31,10 +31,45 @@ namespace AlgoTrader
         private void btnTest_Click(object sender, EventArgs e)
         {
             RealtimeAlpacaAPI.Instance.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
-
             RealtimeAlpacaAPI.Instance.RequestTodayHistoricalTickerData();
             this.StrategyExecutor.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
+            UpdateAccountBalance();
+
             this.btnTest.Enabled = false;
+        }
+
+        /// <summary>
+        /// Method to reflect the current account balance
+        /// </summary>
+        private void UpdateAccountBalance()
+        {
+            decimal balanceDifference = (this.StrategyExecutor.portfolio.availableCash - this.StrategyExecutor.portfolio.startingBalance);
+            this.txtAccountBalance.Invoke(new MethodInvoker(delegate {
+                this.txtAccountBalance.Text = Math.Round(this.StrategyExecutor.portfolio.availableCash, 2).ToString()
+                + " | (" + Math.Round((balanceDifference), 2).ToString()
+                + ")";
+            }));
+            
+            if (balanceDifference > 0)
+            {
+                this.txtAccountBalance.Invoke(new MethodInvoker(delegate { 
+                    this.txtAccountBalance.BackColor = Color.LightGreen; 
+                }));
+            }
+            else if(balanceDifference < 0)
+            {
+                this.txtAccountBalance.Invoke(new MethodInvoker(delegate
+                {
+                    this.txtAccountBalance.BackColor = Color.LightPink;
+                }));
+            }
+            else
+            {
+                this.txtAccountBalance.Invoke(new MethodInvoker(delegate
+                {
+                    this.txtAccountBalance.BackColor = Color.White;
+                }));
+            }
         }
 
         /// <summary>
@@ -75,6 +110,7 @@ namespace AlgoTrader
         public void TradeSignal(object sender, AlgoTraderDAL.Trade trade)
         {
             this.StrategyExecutor.portfolio.trades.Add(trade);
+            UpdateAccountBalance();
             this.pltChart.Invoke((MethodInvoker)delegate { UpdateChart(); });
         }
 

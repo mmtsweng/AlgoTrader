@@ -34,12 +34,14 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txtSymbol = new System.Windows.Forms.TextBox();
             this.chkCrypto = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtAccountBalance = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnTest
             // 
             this.btnTest.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnTest.Location = new System.Drawing.Point(581, 14);
+            this.btnTest.Location = new System.Drawing.Point(599, 14);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(75, 23);
             this.btnTest.TabIndex = 0;
@@ -52,10 +54,10 @@
             this.pltChart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pltChart.Location = new System.Drawing.Point(12, 37);
+            this.pltChart.Location = new System.Drawing.Point(12, 71);
             this.pltChart.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pltChart.Name = "pltChart";
-            this.pltChart.Size = new System.Drawing.Size(664, 295);
+            this.pltChart.Size = new System.Drawing.Size(682, 240);
             this.pltChart.TabIndex = 1;
             // 
             // label1
@@ -86,11 +88,32 @@
             this.chkCrypto.Text = "Is Crypto?";
             this.chkCrypto.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(442, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(99, 15);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Account Balance:";
+            // 
+            // txtAccountBalance
+            // 
+            this.txtAccountBalance.AllowDrop = true;
+            this.txtAccountBalance.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtAccountBalance.Location = new System.Drawing.Point(547, 42);
+            this.txtAccountBalance.Name = "txtAccountBalance";
+            this.txtAccountBalance.Size = new System.Drawing.Size(127, 23);
+            this.txtAccountBalance.TabIndex = 6;
+            // 
             // frmRealtimeTrades
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(689, 335);
+            this.ClientSize = new System.Drawing.Size(707, 314);
+            this.Controls.Add(this.txtAccountBalance);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.chkCrypto);
             this.Controls.Add(this.txtSymbol);
             this.Controls.Add(this.label1);
@@ -113,5 +136,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtSymbol;
         private System.Windows.Forms.CheckBox chkCrypto;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtAccountBalance;
     }
 }

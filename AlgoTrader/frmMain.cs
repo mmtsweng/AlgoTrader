@@ -70,5 +70,12 @@ namespace AlgoTrader
             realtimeTrades.MdiParent = this;
             realtimeTrades.Show();
         }
+
+        private void btnTransactions_Click(object sender, EventArgs e)
+        {
+            frmTransactions transactions = new frmTransactions();
+            transactions.MdiParent = this;  
+            transactions.Show();
+        }
     }
 }

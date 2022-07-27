@@ -76,6 +76,8 @@ namespace AlgoTraderDAL.Strategies
                 transactionDateTime = ohlc.Timeframe,
                 type = TradeType.MARKET
             };
+
+
             return trade;
         }
 
@@ -111,5 +113,6 @@ namespace AlgoTraderDAL.Strategies
         {
             throw new NotImplementedException();
         }
+
     }
 }

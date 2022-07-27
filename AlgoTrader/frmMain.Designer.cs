@@ -41,6 +41,7 @@
             this.btnParameters = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnLiveTrading = new System.Windows.Forms.ToolStripButton();
+            this.btnTransactions = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -89,6 +90,7 @@
             this.btnBackfill,
             this.btnParameters,
             this.toolStripSeparator1,
+            this.btnTransactions,
             this.btnLiveTrading});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -144,6 +146,18 @@
             this.btnLiveTrading.Text = "toolStripButton1";
             this.btnLiveTrading.Click += new System.EventHandler(this.btnLiveTrading_Click);
             // 
+            // btnTransactions
+            // 
+            this.btnTransactions.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnTransactions.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnTransactions.Image = global::AlgoTrader.AlgoResources.transactions;
+            this.btnTransactions.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnTransactions.Name = "btnTransactions";
+            this.btnTransactions.Size = new System.Drawing.Size(23, 22);
+            this.btnTransactions.Text = "Transactions";
+            this.btnTransactions.ToolTipText = "Transaction History";
+            this.btnTransactions.Click += new System.EventHandler(this.btnTransactions_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -179,5 +193,6 @@
         private System.Windows.Forms.ToolStripButton btnParameters;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnLiveTrading;
+        private System.Windows.Forms.ToolStripButton btnTransactions;
     }
 }
