@@ -40,8 +40,8 @@
             this.btnBackfill = new System.Windows.Forms.ToolStripButton();
             this.btnParameters = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnLiveTrading = new System.Windows.Forms.ToolStripButton();
             this.btnTransactions = new System.Windows.Forms.ToolStripButton();
+            this.btnLiveTrading = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -115,7 +115,7 @@
             this.btnBackfill.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnBackfill.Name = "btnBackfill";
             this.btnBackfill.Size = new System.Drawing.Size(23, 22);
-            this.btnBackfill.Text = "Backfill";
+            this.btnBackfill.Text = "Backfill Data";
             this.btnBackfill.ToolTipText = "Backfill data for a Timeframe";
             this.btnBackfill.Click += new System.EventHandler(this.btnBackfill_Click);
             // 
@@ -126,7 +126,7 @@
             this.btnParameters.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnParameters.Name = "btnParameters";
             this.btnParameters.Size = new System.Drawing.Size(23, 22);
-            this.btnParameters.Text = "toolStripButton1";
+            this.btnParameters.Text = "Update Parameters";
             this.btnParameters.ToolTipText = "Strategy Parameters";
             this.btnParameters.Click += new System.EventHandler(this.btnParameters_Click);
             // 
@@ -134,17 +134,6 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // btnLiveTrading
-            // 
-            this.btnLiveTrading.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnLiveTrading.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnLiveTrading.Image = global::AlgoTrader.AlgoResources.Live_trading;
-            this.btnLiveTrading.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnLiveTrading.Name = "btnLiveTrading";
-            this.btnLiveTrading.Size = new System.Drawing.Size(23, 22);
-            this.btnLiveTrading.Text = "toolStripButton1";
-            this.btnLiveTrading.Click += new System.EventHandler(this.btnLiveTrading_Click);
             // 
             // btnTransactions
             // 
@@ -157,6 +146,17 @@
             this.btnTransactions.Text = "Transactions";
             this.btnTransactions.ToolTipText = "Transaction History";
             this.btnTransactions.Click += new System.EventHandler(this.btnTransactions_Click);
+            // 
+            // btnLiveTrading
+            // 
+            this.btnLiveTrading.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnLiveTrading.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnLiveTrading.Image = global::AlgoTrader.AlgoResources.Live_trading;
+            this.btnLiveTrading.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnLiveTrading.Name = "btnLiveTrading";
+            this.btnLiveTrading.Size = new System.Drawing.Size(23, 22);
+            this.btnLiveTrading.Text = "Realtime Trading";
+            this.btnLiveTrading.Click += new System.EventHandler(this.btnLiveTrading_Click);
             // 
             // frmMain
             // 

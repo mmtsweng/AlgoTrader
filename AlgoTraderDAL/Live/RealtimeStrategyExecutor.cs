@@ -29,13 +29,13 @@ namespace AlgoTraderDAL.Live
         /// </summary>
         private void Initialize()
         {
-            this.strategy = new SimpleMomentum(true);
+            this.strategy = new CryptoMomentum(true);
             RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
             RealtimeAlpacaAPI.Instance.TradeCompleted += TradeNotification;
 
 
             //Setup sanity Check
-            this.sanityCheckTimer = new Timer(30000);  //(900000); //15 minutes
+            this.sanityCheckTimer = new Timer(900000); //15 minutes
             this.sanityCheckTimer.Enabled = true;
             this.sanityCheckTimer.Elapsed += new System.Timers.ElapsedEventHandler(sanityCheck);
             this.sanityCheckTimer.AutoReset = true;
@@ -105,7 +105,7 @@ namespace AlgoTraderDAL.Live
 
         private void TradeNotification(object sender, Trade trade)
         {
-            this.portfolio.UpdatePortfolio(trade);
+            this.portfolio.UpdatePortfolio(trade, true);
             if (trade.side == TradeSide.BUY)
             {
                 strategy.openPostions++;

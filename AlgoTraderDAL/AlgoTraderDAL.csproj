@@ -140,6 +140,7 @@
     <Compile Include="Live\RealtimeStrategyExecutor.cs" />
     <Compile Include="Strategies\AbstractStrategy.cs" />
     <Compile Include="Strategies\RandomBuySell.cs" />
+    <Compile Include="Strategies\CryptoMomentum.cs" />
     <Compile Include="Strategies\SimpleMomentum.cs" />
     <Compile Include="StrategyOption.cs">
       <DependentUpon>AlgoModels.tt</DependentUpon>

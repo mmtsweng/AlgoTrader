@@ -35,9 +35,12 @@ namespace AlgoTraderDAL
         /// Method to update the portfolio with the supplied trade
         /// </summary>
         /// <param name="trade"></param>
-        internal void UpdatePortfolio(Trade trade)
+        internal void UpdatePortfolio(Trade trade, bool liveTrading)
         {
-            SaveTransactionToDatabase(trade);
+            if (liveTrading)
+            {
+                SaveTransactionToDatabase(trade);
+            }
 
             decimal tradeValue = (trade.actualPrice * trade.quantity);
             switch (trade.side)

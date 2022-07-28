@@ -42,7 +42,7 @@ namespace AlgoTraderDAL.BackTesting
             {
                 foreach (OHLC ohlc in this.historicalOHLC)
                 {
-                    this.portfolio.UpdatePortfolio(strategy.Next(ohlc));
+                    this.portfolio.UpdatePortfolio(strategy.Next(ohlc), false);
                 }
                 strategy.Close(this.historicalOHLC[this.historicalOHLC.Count - 1]);
             }
@@ -77,13 +77,13 @@ namespace AlgoTraderDAL.BackTesting
                 if (trackingDay.Timeframe.Date < ohlc.Timeframe.Date)
                 {
                     closingTrade = strategy.Close(this.historicalOHLC[this.historicalOHLC.Count - 1]);
-                    if (closingTrade != null) { this.portfolio.UpdatePortfolio(closingTrade); }
+                    if (closingTrade != null) { this.portfolio.UpdatePortfolio(closingTrade, false); }
                 }
-                this.portfolio.UpdatePortfolio(strategy.Next(ohlc));
+                this.portfolio.UpdatePortfolio(strategy.Next(ohlc), false);
                 trackingDay = ohlc;
             }
             closingTrade = strategy.Close(this.historicalOHLC[this.historicalOHLC.Count - 1]);
-            if (closingTrade != null) { this.portfolio.UpdatePortfolio(closingTrade); }
+            if (closingTrade != null) { this.portfolio.UpdatePortfolio(closingTrade, false); }
 
             return closingTrade;
         }

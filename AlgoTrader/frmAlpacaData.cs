@@ -12,7 +12,7 @@ namespace AlgoTrader
     public partial class frmAlpacaData : Form
 #pragma warning restore IDE1006 // Naming Styles
     {
-        private IStrategy strategy = new SimpleMomentum();
+        private IStrategy strategy = new CryptoMomentum();
         public DateTime intradateTime { get; set; }
         public frmAnalytics analyticsForm { get; set; }
         public BackTester backtest { get; set; }
