@@ -113,9 +113,15 @@ namespace AlgoTraderDAL.Live
                     break;
             }
 
-            var order = await alpacaTradingClient.PostOrderAsync(
-                orderside.Market(trade.symbol, (int)trade.quantity)
-                );
+            try
+            {
+                var order = await alpacaTradingClient.PostOrderAsync(
+                    orderside.Market(trade.symbol, (int)trade.quantity)
+                    );
+            }
+            catch (Exception) // What to do if the order fails???
+            {
+            }
         }
 
         /// <summary>
@@ -164,6 +170,15 @@ namespace AlgoTraderDAL.Live
             return portfolio;
         }
 
+        /// <summary>
+        /// Method to get Alpaca's open positions on a symbol
+        /// </summary>
+        /// <param name="symbol"></param>
+        public decimal GetOpenPositionCount(string symbol)
+        {
+            return GetOpenPositionsFromAlpaca(symbol).GetAwaiter().GetResult();
+        }
+
         /*
          * 
          * Private Members Below
@@ -204,6 +219,22 @@ namespace AlgoTraderDAL.Live
             }
 
             OHLCRefresh?.Invoke(this, prices);
+        }
+
+        private async Task<decimal> GetOpenPositionsFromAlpaca(string symbol)
+        {
+            try
+            {
+                var positions = await this.alpacaTradingClient.GetPositionAsync(symbol);
+                return (decimal)positions.Quantity;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("does not exist"))
+                { return 0; }
+                else
+                { return -1; }                
+            }
         }
 
         /// <summary>

@@ -10,7 +10,6 @@ namespace AlgoTraderDAL
     public class Portfolio
     {
         public List<Trade> trades = new List<Trade>();
-
         public string accountNumber { get; set; }
         public decimal startingBalance { get; set; }
         public decimal positionBalance { get; set; }
