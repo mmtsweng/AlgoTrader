@@ -119,8 +119,9 @@ namespace AlgoTraderDAL.Live
                     orderside.Market(trade.symbol, (int)trade.quantity)
                     );
             }
-            catch (Exception) // What to do if the order fails???
+            catch (Exception e) // What to do if the order fails???
             {
+                Console.WriteLine(e.Message);
             }
         }
 

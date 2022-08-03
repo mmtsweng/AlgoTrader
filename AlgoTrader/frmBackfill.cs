@@ -21,7 +21,7 @@ namespace AlgoTrader
 
         private void frmBackfill_Load(object sender, EventArgs e)
         {
-            this.txtTicker.Text = "SPY";
+            this.txtTicker.Text = ":SOLUSD";
             this.cboPeriod.DataSource = Enum.GetValues(typeof(OHLC_TIMESPAN));
             this.dtFrom.Value = DateTime.Now.AddDays(-15);   //.AddYears(-2);//Past 2 years' data
             this.dtTo.Value = DateTime.Now.AddDays(-1); //yesterday

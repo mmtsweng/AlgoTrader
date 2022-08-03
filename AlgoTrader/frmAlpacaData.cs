@@ -31,7 +31,7 @@ namespace AlgoTrader
         /// <param name="e"></param>
         private void frmAlpacaData_Load(object sender, EventArgs e)
         {
-            this.txtTicker.Text = "SPY";
+            this.txtTicker.Text = ":SOLUSD";
             this.intradateTime = DateTime.Now;
             this.cboPeriod.DataSource = Enum.GetValues(typeof(OHLC_TIMESPAN));
             this.backtest = new BackTester(strategy, new List<OHLC>());

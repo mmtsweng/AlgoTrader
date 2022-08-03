@@ -160,6 +160,19 @@ namespace AlgoTrader
             hplot.ColorDown = Color.LightGray;
             hplot.ColorUp = Color.LightGray;
 
+            //Add focus chart
+            if (this.StrategyExecutor.strategy.focusRange > 0)
+            {
+                DateTime dtNow = DateTime.Now;
+                DateTime dtStart = dtNow.AddMinutes(-(this.StrategyExecutor.strategy.focusRange));
+                var vSpan = this.pltChart.Plot.AddHorizontalSpan(dtNow.ToOADate(), dtStart.ToOADate());
+                vSpan.DragEnabled = false;
+                vSpan.BorderColor = Color.LightSeaGreen;
+                vSpan.BorderLineStyle = LineStyle.Dot;
+                vSpan.BorderLineWidth = 2;
+                vSpan.Color = Color.White;
+            }
+
             if (buys.Length > 0)
             {
                 this.pltChart.Plot.AddScatterPoints(buytimes, buys, Color.DarkGreen, markerShape: ScottPlot.MarkerShape.filledTriangleUp, markerSize: 10);

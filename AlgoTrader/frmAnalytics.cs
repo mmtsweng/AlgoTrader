@@ -116,7 +116,7 @@ namespace AlgoTrader
             //}
             if (buys.Length > 0)
             {
-                this.pltResults.Plot.AddScatterPoints(buytimes, buys, Color.DarkBlue, markerShape: ScottPlot.MarkerShape.filledCircle, markerSize: 10);
+                this.pltResults.Plot.AddScatterPoints(buytimes, buys, Color.DarkBlue, markerShape: ScottPlot.MarkerShape.filledCircle, markerSize: 5);
             }
             if (winningsells.Length > 0)
             {

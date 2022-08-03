@@ -13,6 +13,7 @@ namespace AlgoTraderDAL.Strategies
         public bool isIntraday { get; set; }
         public bool isSellable { get { return openPostions > 0; } }
         public bool isBuyable { get { return openPostions < maxOpenPositions; } }
+        public int focusRange { get; set; }
         internal bool isLiveTrading { get; set; }
         public int openPostions { get; set; }
         public Analytics analytics { get; set; }
@@ -24,6 +25,7 @@ namespace AlgoTraderDAL.Strategies
             this.isIntraday = false;
             this.isLiveTrading = false;
             this.maxOpenPositions = 1;
+            this.focusRange = 0;
         }
 
         public virtual bool BuySignal()

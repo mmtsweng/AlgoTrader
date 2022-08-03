@@ -10,11 +10,9 @@ namespace AlgoTraderDAL.Types
     {
         bool canOpenMultiplePositons { get; set; }
         bool isIntraday { get; set; }
-
         bool isBuyable { get; }
-
-        bool isSellable { get; }   
-
+        bool isSellable { get; }
+        int focusRange { get; set; }
         int openPostions { get; set; }
         Analytics analytics { get; set; }
         Dictionary<string, string> dbParameters {get; set;}

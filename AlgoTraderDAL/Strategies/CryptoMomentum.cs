@@ -12,6 +12,8 @@ namespace AlgoTraderDAL.Strategies
         public Queue<decimal> opens { get; set; }
         public Queue<decimal> times { get; set; }
         public Queue<decimal> closes { get; set; }
+        public Queue<decimal> highs { get; set; }
+        public Queue<decimal> lows { get; set; }
         public Queue<decimal> avgohlc { get; set; }
         public Queue<decimal> ohlctimes { get; set; }
         public int BuyQueueSize { get; set; }
@@ -19,11 +21,17 @@ namespace AlgoTraderDAL.Strategies
         public int TrendQueueSize { get; set; }
         internal TrendlineData openTrend { get; set; }
         internal TrendlineData closeTrend { get; set; }
+        internal TrendlineData highTrend { get; set; }
+        internal TrendlineData lowTrend { get; set; }
         internal TrendlineData ohlcTrend { get; set; }
+        private decimal stoplossSalePrice { get; set; }
+        public bool stoplossSale { get; set; }
+        private OHLC recentOHLC { get; set; }
 
         public CryptoMomentum()
         {
             base.isIntraday = true;
+            this.stoplossSalePrice = decimal.MaxValue;
         }
 
         public CryptoMomentum(bool isLiveTrading)
@@ -43,6 +51,9 @@ namespace AlgoTraderDAL.Strategies
             this.times = new Queue<decimal>();
             this.avgohlc = new Queue<decimal>();
             this.ohlctimes = new Queue<decimal>();
+            this.highs = new Queue<decimal>();  
+            this.lows = new Queue<decimal>();
+            this.recentOHLC = new OHLC();
         }
 
         /// <summary>
@@ -73,6 +84,7 @@ namespace AlgoTraderDAL.Strategies
             if (int.TryParse(this.dbParameters["TrendQueueSize"], out parsedVal))
             {
                 this.TrendQueueSize = parsedVal;
+                this.focusRange = parsedVal;
             }
             else
             {
@@ -97,6 +109,8 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override Trade Next(OHLC ohlc)
         {
+            this.recentOHLC = ohlc;
+
             UpdateQueues(ohlc);
 
             if (opens.Count == BuyQueueSize)
@@ -106,6 +120,14 @@ namespace AlgoTraderDAL.Strategies
             if (closes.Count == this.SellQueueSize)
             {
                 closeTrend = Trendline(closes.Select((t, i) => new Tuple<decimal, decimal>(times.ToList()[i], t)));
+            }
+            if (lows.Count == BuyQueueSize)
+            {
+                highTrend = Trendline(opens.Select((t, i) => new Tuple<decimal, decimal>(times.ToList()[i], t)));
+            }
+            if (highs.Count == BuyQueueSize)
+            {
+                lowTrend = Trendline(opens.Select((t, i) => new Tuple<decimal, decimal>(times.ToList()[i], t)));
             }
             if (avgohlc.Count > 1)
             {
@@ -123,9 +145,19 @@ namespace AlgoTraderDAL.Strategies
             decimal dt = GetDateAsDecimal(ohlc.Timeframe);
 
             times.Enqueue(dt);
-            if (times.Count > this.BuyQueueSize)
+            if (this.BuyQueueSize > this.SellQueueSize)
             {
-                times.Dequeue();
+                if (times.Count > this.BuyQueueSize)
+                {
+                    times.Dequeue();
+                }
+            }
+            else
+            {
+                if (times.Count > this.SellQueueSize)
+                {
+                    times.Dequeue();
+                }
             }
             opens.Enqueue(ohlc.Open);
             if (opens.Count > this.BuyQueueSize)
@@ -136,6 +168,16 @@ namespace AlgoTraderDAL.Strategies
             if (closes.Count > this.SellQueueSize)
             {
                 closes.Dequeue();
+            }
+            highs.Enqueue(ohlc.High);
+            if (highs.Count > this.BuyQueueSize)
+            {
+                highs.Dequeue();
+            }
+            lows.Enqueue(ohlc.Low);
+            if (lows.Count> this.BuyQueueSize)
+            {
+                lows.Dequeue();
             }
 
             List<decimal> medianCalc = new List<decimal>();
@@ -158,10 +200,32 @@ namespace AlgoTraderDAL.Strategies
         /// <param name="ohlc"></param>
         /// <returns></returns>
         public override bool BuySignal()
-        {
+        {                      
             if (openTrend != null && closeTrend != null && ohlcTrend != null)
             {
-                return (ohlcTrend.Slope > 0 && openTrend.Slope > 0 && closeTrend.Slope > 0);
+                if (avgohlc.Count < this.TrendQueueSize) { return false; }
+
+                if (ohlcTrend.Slope > 0 && (openTrend.Slope > 0 || closeTrend.Slope > 0)) //(highTrend.Slope > 0 && lowTrend.Slope > 0));
+                {
+                    //Set Stoploss
+                    if (this.stoplossSalePrice < decimal.MaxValue)
+                    {
+                        this.stoplossSale = (this.recentOHLC.Low < this.stoplossSalePrice
+                        || this.recentOHLC.Open < this.stoplossSalePrice
+                        || this.recentOHLC.Close < this.stoplossSalePrice);
+                    }
+                    else
+                    {
+                        this.stoplossSalePrice = this.recentOHLC.Low;
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+
+                }
             }
             else
             {
@@ -176,9 +240,23 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool SellSignal()
         {
+            if (this.stoplossSale) //Alpaca doesn't support stoploss so simulate one
+            {
+                this.stoplossSalePrice = decimal.MaxValue;
+                return true;
+            }
+
             if (openTrend != null && closeTrend != null & ohlcTrend != null)
             {
-                return (openTrend.Slope < 0 || closeTrend.Slope < 0);
+                if (openTrend.Slope < 0 || closeTrend.Slope < 0)
+                {
+                    this.stoplossSalePrice = decimal.MaxValue;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             { 
@@ -217,13 +295,20 @@ namespace AlgoTraderDAL.Strategies
             var sumXY = cachedData.Sum(x => x.Item1 * x.Item2);
             TrendlineData results = new TrendlineData();
 
-            //b = (sum(x*y) - sum(x)sum(y)/n)
-            //      / (sum(x^2) - sum(x)^2/n)
-            results.Slope = (sumXY - ((sumX * sumY) / n))
-                        / (sumX2 - (sumX * sumX / n));
+            try
+            {
+                results.Slope = (sumXY - ((sumX * sumY) / n))
+                    / (sumX2 - (sumX * sumX / n));
+                results.Intercept = (sumY / n) - (results.Slope * (sumX / n));
+            }
+            catch (Exception)
+            {
+                results.Slope = 0;
+                results.Intercept = 0;
+            }
 
             //a = sum(y)/n - b(sum(x)/n)
-            results.Intercept = (sumY / n) - (results.Slope * (sumX / n));
+
 
             results.Start = GetYValue(cachedData.Min(a => a.Item1), results);
             results.End = GetYValue(cachedData.Max(a => a.Item1), results);

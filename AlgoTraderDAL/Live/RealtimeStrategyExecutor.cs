@@ -85,8 +85,9 @@ namespace AlgoTraderDAL.Live
                 RealtimeAlpacaAPI.Instance.SubmitTrade(new Trade()
                 {
                     quantity = 1,
-                    submittedPrice = ohlc.Open,
+                    submittedPrice = Decimal.Multiply(ohlc.Open, 3M),
                     side = TradeSide.BUY,
+                    stopLossPrice = ohlc.Low,
                     symbol = symbol
                 });
             }

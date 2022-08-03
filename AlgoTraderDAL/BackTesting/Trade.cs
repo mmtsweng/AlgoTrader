@@ -48,7 +48,8 @@ namespace AlgoTraderDAL
         {
             this.side = TradeSide.NONE;
             this.liveTrade = liveTrade;
-            this.active = false; 
+            this.active = false;
+            this.stopLossPrice = -1M;
         }
     }
 }
