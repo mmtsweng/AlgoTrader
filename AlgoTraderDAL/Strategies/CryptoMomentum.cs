@@ -123,11 +123,11 @@ namespace AlgoTraderDAL.Strategies
             }
             if (lows.Count == BuyQueueSize)
             {
-                highTrend = Trendline(opens.Select((t, i) => new Tuple<decimal, decimal>(times.ToList()[i], t)));
+                highTrend = Trendline(lows.Select((t, i) => new Tuple<decimal, decimal>(times.ToList()[i], t)));
             }
             if (highs.Count == BuyQueueSize)
             {
-                lowTrend = Trendline(opens.Select((t, i) => new Tuple<decimal, decimal>(times.ToList()[i], t)));
+                lowTrend = Trendline(highs.Select((t, i) => new Tuple<decimal, decimal>(times.ToList()[i], t)));
             }
             if (avgohlc.Count > 1)
             {
@@ -205,20 +205,10 @@ namespace AlgoTraderDAL.Strategies
             {
                 if (avgohlc.Count < this.TrendQueueSize) { return false; }
 
-                if (ohlcTrend.Slope > 0 && (openTrend.Slope > 0 || closeTrend.Slope > 0)) //(highTrend.Slope > 0 && lowTrend.Slope > 0));
+                if (ohlcTrend.Slope > 0 && (openTrend.Slope > 0 && closeTrend.Slope > 0)) //(highTrend.Slope > 0 && lowTrend.Slope > 0));
                 {
                     //Set Stoploss
-                    if (this.stoplossSalePrice < decimal.MaxValue)
-                    {
-                        this.stoplossSale = (this.recentOHLC.Low < this.stoplossSalePrice
-                        || this.recentOHLC.Open < this.stoplossSalePrice
-                        || this.recentOHLC.Close < this.stoplossSalePrice);
-                    }
-                    else
-                    {
-                        this.stoplossSalePrice = this.recentOHLC.Low;
-                    }
-
+                    this.stoplossSalePrice = this.recentOHLC.Low;
                     return true;
                 }
                 else
@@ -240,15 +230,18 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool SellSignal()
         {
-            if (this.stoplossSale) //Alpaca doesn't support stoploss so simulate one
+            if (this.stoplossSalePrice < decimal.MaxValue) //Alpaca doesn't support stoploss so simulate one
             {
-                this.stoplossSalePrice = decimal.MaxValue;
-                return true;
+                if (this.recentOHLC.Low < this.stoplossSalePrice) //  || this.recentOHLC.Open < this.stoplossSalePrice || this.recentOHLC.Close < this.stoplossSalePrice)
+                {
+                    this.stoplossSalePrice = decimal.MaxValue;
+                    return true;
+                }
             }
 
             if (openTrend != null && closeTrend != null & ohlcTrend != null)
             {
-                if (openTrend.Slope < 0 || closeTrend.Slope < 0)
+                if (ohlcTrend.Slope < 0 || closeTrend.Slope < 0)
                 {
                     this.stoplossSalePrice = decimal.MaxValue;
                     return true;
