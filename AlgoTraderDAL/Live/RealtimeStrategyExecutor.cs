@@ -29,15 +29,9 @@ namespace AlgoTraderDAL.Live
         /// </summary>
         private void Initialize()
         {
-            this.strategy = new CryptoMomentum(true);
+            this.strategy = new CryptoIntradayStrategy(true);
             RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
             RealtimeAlpacaAPI.Instance.TradeCompleted += TradeNotification;
-
-            //Setup sanity Check
-            this.sanityCheckTimer = new Timer(900000); //15 minutes
-            this.sanityCheckTimer.Enabled = true;
-            this.sanityCheckTimer.Elapsed += new System.Timers.ElapsedEventHandler(sanityCheck);
-            this.sanityCheckTimer.AutoReset = true;
         }
 
         /// <summary>
@@ -66,7 +60,6 @@ namespace AlgoTraderDAL.Live
 
             RealtimeAlpacaAPI.Instance.OHLCReceived -= OHLCDataReceived;
             RealtimeAlpacaAPI.Instance.TradeCompleted -= TradeNotification;
-            this.sanityCheckTimer.Elapsed -= new System.Timers.ElapsedEventHandler(sanityCheck);
         }
 
         /// <summary>
@@ -117,20 +110,5 @@ namespace AlgoTraderDAL.Live
             TradeOccurred?.Invoke(this, trade);
         }
 
-
-        /// <summary>
-        /// If our portfolio doesn't match Alpaca's portfolio, restart.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void sanityCheck(object sender, ElapsedEventArgs e)
-        {
-            if (this.strategy.openPostions != (int)RealtimeAlpacaAPI.Instance.GetOpenPositionCount(this.symbol))
-            {
-                this.End(this.symbol, this.isCrypto);
-                this.Initialize();
-                this.Start(this.symbol, this.isCrypto);
-            }
-        }
     }
 }
