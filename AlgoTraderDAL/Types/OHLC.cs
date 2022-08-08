@@ -58,5 +58,37 @@ namespace AlgoTraderDAL.Types
 
             return tspan;
         }
+
+        /// <summary>
+        /// Method to return the median value of this OHLC instance
+        /// </summary>
+        /// <returns></returns>
+        public decimal GetMedian()
+        {
+            List<decimal> medianCalc = new List<decimal>();
+            medianCalc.Add(this.Open);
+            medianCalc.Add(this.Close);
+            medianCalc.Add(this.High);
+            medianCalc.Add(this.Low);
+            return CalculateMedian(medianCalc.ToArray());
+        }
+
+        /// <summary>
+        /// Method to return the median value of an array of numbers
+        /// </summary>
+        /// <param name="sourceNumbers"></param>
+        /// <returns></returns>
+        private decimal CalculateMedian(decimal[] sourceNumbers)
+        {
+            //make sure the list is sorted, but use a new array
+            decimal[] sortedPNumbers = (decimal[])sourceNumbers.Clone();
+            Array.Sort(sortedPNumbers);
+
+            //get the median
+            int size = sortedPNumbers.Length;
+            int mid = size / 2;
+            decimal median = (size % 2 != 0) ? (decimal)sortedPNumbers[mid] : ((decimal)sortedPNumbers[mid] + (decimal)sortedPNumbers[mid - 1]) / 2;
+            return median;
+        }
     }
 }

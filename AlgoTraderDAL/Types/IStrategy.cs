@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlgoTraderDAL.Indicators;
 
 namespace AlgoTraderDAL.Types
 {
@@ -16,6 +17,7 @@ namespace AlgoTraderDAL.Types
         int openPostions { get; set; }
         Analytics analytics { get; set; }
         Dictionary<string, string> dbParameters {get; set;}
+        List<IIndicator> Indicators { get; set; }
 
         void Init();
         void UpdateParameters();
@@ -25,5 +27,7 @@ namespace AlgoTraderDAL.Types
         bool BuySignal();
         bool SellSignal();
         Trade MakeTrade(OHLC ohlc, TradeSide side);
+        void UpdateIndicators(OHLC ohlc);
+
     }
 }

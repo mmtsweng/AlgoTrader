@@ -136,9 +136,11 @@
     <Compile Include="HistoricalTransaction.cs">
       <DependentUpon>AlgoModels.tt</DependentUpon>
     </Compile>
+    <Compile Include="Indicators\IndicatorNode.cs" />
     <Compile Include="Live\RealtimeAlpacaAPI.cs" />
     <Compile Include="Live\RealtimeStrategyExecutor.cs" />
     <Compile Include="Strategies\AbstractStrategy.cs" />
+    <Compile Include="Indicators\ExponentialMovingAverageIndicator.cs" />
     <Compile Include="Strategies\RandomBuySell.cs" />
     <Compile Include="Strategies\CryptoMomentum.cs" />
     <Compile Include="Strategies\SimpleMomentum.cs" />
@@ -149,6 +151,7 @@
       <DependentUpon>AlgoModels.tt</DependentUpon>
     </Compile>
     <Compile Include="Types\Analytics.cs" />
+    <Compile Include="Indicators\IIndicator.cs" />
     <Compile Include="Types\IStrategy.cs" />
     <Compile Include="Types\OHLC.cs" />
     <Compile Include="BackTesting\Portfolio.cs" />

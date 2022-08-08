@@ -8,9 +8,7 @@ using System.Drawing;
 
 namespace AlgoTrader
 {
-#pragma warning disable IDE1006 // Naming Styles
     public partial class frmAlpacaData : Form
-#pragma warning restore IDE1006 // Naming Styles
     {
         private IStrategy strategy = new CryptoMomentum();
         public DateTime intradateTime { get; set; }
@@ -35,7 +33,7 @@ namespace AlgoTrader
             this.intradateTime = DateTime.Now;
             this.cboPeriod.DataSource = Enum.GetValues(typeof(OHLC_TIMESPAN));
             this.backtest = new BackTester(strategy, new List<OHLC>());
-            this.analyticsLog = new Analytics[0];
+            this.analyticsLog = Array.Empty<Analytics>();
             this.analyticsLogIdx = 0;
 
             DateTime now = DateTime.Today.Date;

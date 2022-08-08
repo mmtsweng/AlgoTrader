@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlgoTraderDAL.Types;
+using AlgoTraderDAL.Indicators;
 
 namespace AlgoTraderDAL.Strategies
 {
@@ -18,6 +19,7 @@ namespace AlgoTraderDAL.Strategies
         public int openPostions { get; set; }
         public Analytics analytics { get; set; }
         public virtual Dictionary<string, string> dbParameters { get; set; }
+        public virtual List<IIndicator> Indicators { get; set; }
         public int maxOpenPositions { get; set; }
 
         public AbstractStrategy()
@@ -26,6 +28,7 @@ namespace AlgoTraderDAL.Strategies
             this.isLiveTrading = false;
             this.maxOpenPositions = 1;
             this.focusRange = 0;
+            this.Indicators = new List<IIndicator>();
         }
 
         public virtual bool BuySignal()
@@ -116,5 +119,27 @@ namespace AlgoTraderDAL.Strategies
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Method to find a particular indicator
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public IIndicator GetIndicatorByName(string name)
+        {
+            foreach (IIndicator item in this.Indicators)
+            {
+                if (item.Name == name) { return item; }
+            }
+            return null;
+        }
+
+        public void UpdateIndicators(OHLC ohlc)
+        {
+            foreach(IIndicator item in this.Indicators)
+            {
+                item.AddDataPoint(ohlc);
+            }
+            throw new NotImplementedException();
+        }        
     }
 }

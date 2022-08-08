@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Linq;
 using AlgoTraderDAL.Live;
-using AlgoTraderDAL.Types;
+using AlgoTraderDAL.Indicators;
 using ScottPlot;
 
 namespace AlgoTrader
@@ -172,6 +172,17 @@ namespace AlgoTrader
                 vSpan.BorderLineWidth = 2;
                 vSpan.Color = Color.White;
             }
+
+            foreach(IIndicator ind in this.StrategyExecutor.strategy.Indicators)
+            {
+                double[] times = ind.History.Select(x => x.DTime.ToOADate()).ToArray();
+                double[] val = ind.History.Select(x => decimal.ToDouble((decimal)x.Value)).ToArray();
+                if (times.Length > 0 && val.Length == times.Length)
+                {
+                    this.pltChart.Plot.AddScatter(times, val, Color.Orange, lineWidth: 3, markerSize: 0, lineStyle: LineStyle.Solid);
+                }
+            }
+
 
             if (buys.Length > 0)
             {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlgoTraderDAL.Types;
+using AlgoTraderDAL.Indicators;
 
 namespace AlgoTraderDAL.Strategies
 {
@@ -27,11 +28,13 @@ namespace AlgoTraderDAL.Strategies
         private decimal stoplossSalePrice { get; set; }
         public bool stoplossSale { get; set; }
         private OHLC recentOHLC { get; set; }
+        public decimal slopeFactor { get; set; }
 
         public CryptoMomentum()
         {
             base.isIntraday = true;
             this.stoplossSalePrice = decimal.MaxValue;
+            this.slopeFactor = 0M;
         }
 
         public CryptoMomentum(bool isLiveTrading)
@@ -79,6 +82,25 @@ namespace AlgoTraderDAL.Strategies
             else
             {
                 this.SellQueueSize = 5;
+            }
+
+            if (int.TryParse(this.dbParameters["EMAPeriod"], out parsedVal))
+            {
+                this.Indicators.Add(new ExponentialMovingAverageIndicator(parsedVal));
+            }
+            else
+            {
+                this.Indicators.Add(new ExponentialMovingAverageIndicator(5));
+            }
+
+            decimal parsedDec = 0;
+            if (decimal.TryParse(this.dbParameters["EMASlope"], out parsedDec))
+            {
+                this.slopeFactor = parsedDec;
+            }
+            else
+            {
+                this.slopeFactor = 0;
             }
 
             if (int.TryParse(this.dbParameters["TrendQueueSize"], out parsedVal))
@@ -180,12 +202,9 @@ namespace AlgoTraderDAL.Strategies
                 lows.Dequeue();
             }
 
-            List<decimal> medianCalc = new List<decimal>();
-            medianCalc.Add(ohlc.Open);
-            medianCalc.Add(ohlc.Close);
-            medianCalc.Add(ohlc.High);
-            medianCalc.Add(ohlc.Low);
-            avgohlc.Enqueue(GetMedian(medianCalc.ToArray()));
+            this.GetIndicatorByName("ExponentialMovingAverageIndicator").AddDataPoint(ohlc);
+            decimal median = ohlc.GetMedian();
+            avgohlc.Enqueue(median);
             ohlctimes.Enqueue(dt);
             if (avgohlc.Count > this.TrendQueueSize)
             {
@@ -203,9 +222,16 @@ namespace AlgoTraderDAL.Strategies
         {                      
             if (openTrend != null && closeTrend != null && ohlcTrend != null)
             {
+                //Protection Checks
                 if (avgohlc.Count < this.TrendQueueSize) { return false; }
+                ExponentialMovingAverageIndicator ema = (ExponentialMovingAverageIndicator)this.GetIndicatorByName("ExponentialMovingAverageIndicator");
+                if (ema == null) { return false; }
 
-                if (ohlcTrend.Slope > 0 && (openTrend.Slope > 0 && closeTrend.Slope > 0)) //(highTrend.Slope > 0 && lowTrend.Slope > 0));
+                //We only check every 10 minutes, on the X3 and X8 times
+                int minuteVal = this.recentOHLC.Timeframe.Minute % 10;
+                if (minuteVal != 3) { return false; }
+
+                if (ema.Slope > this.slopeFactor) // && ema.SlopeChange &&
                 {
                     //Set Stoploss
                     this.stoplossSalePrice = this.recentOHLC.Low;
@@ -214,7 +240,6 @@ namespace AlgoTraderDAL.Strategies
                 else
                 {
                     return false;
-
                 }
             }
             else
@@ -230,31 +255,48 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool SellSignal()
         {
-            if (this.stoplossSalePrice < decimal.MaxValue) //Alpaca doesn't support stoploss so simulate one
+
+            //Get the indicator
+            ExponentialMovingAverageIndicator ema = (ExponentialMovingAverageIndicator)this.GetIndicatorByName("ExponentialMovingAverageIndicator");
+            if (ema == null) { return false; }
+
+            if (ema.Slope < 0 || ohlcTrend.Slope < (-this.slopeFactor)) // && ema.SlopeChange 
             {
-                if (this.recentOHLC.Low < this.stoplossSalePrice) //  || this.recentOHLC.Open < this.stoplossSalePrice || this.recentOHLC.Close < this.stoplossSalePrice)
+                //Set Stoploss
+                this.stoplossSalePrice = decimal.MaxValue;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            /* 
+            //We only check every 5 minutes, on the X3 and X8 times
+            int minuteVal = this.recentOHLC.Timeframe.Minute % 10;
+
+            if (minuteVal == 8 || minuteVal == 3)
+            {
+                /Check for Stoploss on 3 and 8
+                if (this.stoplossSalePrice < decimal.MaxValue) //Alpaca doesn't support stoploss so simulate one
                 {
-                    this.stoplossSalePrice = decimal.MaxValue;
-                    return true;
+                    if (this.recentOHLC.Low < this.stoplossSalePrice) //  || this.recentOHLC.Open < this.stoplossSalePrice || this.recentOHLC.Close < this.stoplossSalePrice)
+                    {
+                        this.stoplossSalePrice = decimal.MaxValue;
+                        return true;
+                    }
                 }
             }
 
-            if (openTrend != null && closeTrend != null & ohlcTrend != null)
-            {
-                if (ohlcTrend.Slope < 0 || closeTrend.Slope < 0)
-                {
-                    this.stoplossSalePrice = decimal.MaxValue;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
+            if (minuteVal == 3)
             { 
-                return false;
-            }
+            
+             }
+            return false;
+             */
+
+
+
+
         }
 
         /// <summary>
@@ -329,24 +371,6 @@ namespace AlgoTraderDAL.Strategies
             TimeSpan t = date.Subtract(new DateTime(1990, 1, 1, 0, 0, 0, 0));
             decimal timespan = (decimal)t.TotalSeconds;
             return timespan;
-        }
-
-        /// <summary>
-        /// Method to return the median value of an array of numbers
-        /// </summary>
-        /// <param name="sourceNumbers"></param>
-        /// <returns></returns>
-        internal decimal GetMedian(decimal[] sourceNumbers)
-        {
-            //make sure the list is sorted, but use a new array
-            decimal[] sortedPNumbers = (decimal[])sourceNumbers.Clone();
-            Array.Sort(sortedPNumbers);
-
-            //get the median
-            int size = sortedPNumbers.Length;
-            int mid = size / 2;
-            decimal median = (size % 2 != 0) ? (decimal)sortedPNumbers[mid] : ((decimal)sortedPNumbers[mid] + (decimal)sortedPNumbers[mid - 1]) / 2;
-            return median;
         }
     }
 }

@@ -33,7 +33,6 @@ namespace AlgoTraderDAL.Live
             RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
             RealtimeAlpacaAPI.Instance.TradeCompleted += TradeNotification;
 
-
             //Setup sanity Check
             this.sanityCheckTimer = new Timer(900000); //15 minutes
             this.sanityCheckTimer.Enabled = true;
