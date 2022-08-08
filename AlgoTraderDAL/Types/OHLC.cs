@@ -4,18 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Alpaca.Markets;
+using Skender.Stock.Indicators;
 
 namespace AlgoTraderDAL.Types
 {
-    public enum OHLC_TIMESPAN
+    public enum OHLC_TIMESPAN 
     {
         DAY,
         HOUR,
         MINUTE
     }
 
-    public class OHLC
+    public class OHLC : Skender.Stock.Indicators.IQuote
     {
+        DateTime Skender.Stock.Indicators.IQuote.Date => Timeframe;
         public string Symbol { get; set; }
         public DateTime Timeframe { get; set; }
         public decimal Open { get; set; }

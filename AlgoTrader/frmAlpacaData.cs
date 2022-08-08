@@ -10,7 +10,7 @@ namespace AlgoTrader
 {
     public partial class frmAlpacaData : Form
     {
-        private IStrategy strategy = new CryptoMomentum();
+        private IStrategy strategy = new CryptoIntradayStrategy();
         public DateTime intradateTime { get; set; }
         public frmAnalytics analyticsForm { get; set; }
         public BackTester backtest { get; set; }
@@ -131,8 +131,11 @@ namespace AlgoTrader
                 this.Cursor = Cursors.WaitCursor;
                 this.btnChart.Enabled = false;
                 this.analyticsLog = this.backtest.RunIntradayBackTest(this.txtTicker.Text, this.dtFrom.Value, this.dtTo.Value, (OHLC_TIMESPAN)cboPeriod.SelectedValue).ToArray();
-                DisplayIntradayAnalytics(analyticsLog);
-                DisplayAnalyticsData(this.backtest, analyticsLog[analyticsLogIdx]);
+                if (this.analyticsLog.Length > 0)
+                {
+                    DisplayIntradayAnalytics(analyticsLog);
+                    DisplayAnalyticsData(this.backtest, analyticsLog[analyticsLogIdx]);
+                }
                 this.Cursor = Cursors.Default;
             }
             else
