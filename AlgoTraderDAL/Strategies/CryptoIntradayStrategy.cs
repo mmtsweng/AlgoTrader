@@ -66,10 +66,6 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool BuySignal()
         {
-            EmaResult ema = this.OHLCs.GetEma(30).LastOrDefault();
-            ElderRayResult err = this.OHLCs.GetElderRay(30).LastOrDefault();
-            CandleResult candle = this.OHLCs.GetMarubozu(95).LastOrDefault();
-
             IEnumerable<SuperTrendResult> trend = this.OHLCs.GetSuperTrend(10, 3);
             if (trend != null && trend.LastOrDefault().SuperTrend != null)
             {
@@ -83,15 +79,6 @@ namespace AlgoTraderDAL.Strategies
                 }
             }
             return false;
-
-            if ((candle.Match == Match.BullSignal) && (err.BullPower.GetValueOrDefault() > 0.2d))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         /// <summary>
