@@ -114,10 +114,10 @@ namespace AlgoTraderDAL.Live
             }
 
             try
-            {
+            {                
                 var order = await alpacaTradingClient.PostOrderAsync(
                     orderside.Market(trade.symbol, (int)trade.quantity)
-                    );
+                    );   
             }
             catch (Exception e) // What to do if the order fails???
             {

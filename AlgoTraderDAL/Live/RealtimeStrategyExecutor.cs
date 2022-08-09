@@ -30,8 +30,6 @@ namespace AlgoTraderDAL.Live
         private void Initialize()
         {
             this.strategy = new CryptoIntradayStrategy(true);
-            RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
-            RealtimeAlpacaAPI.Instance.TradeCompleted += TradeNotification;
         }
 
         /// <summary>
@@ -44,8 +42,22 @@ namespace AlgoTraderDAL.Live
             this.symbol = symbol;
             this.isCrypto = isCrypto;
             RealtimeAlpacaAPI.Instance.CloseAllPositions();
+
+            //Put some cash in the account for commission fees
+            RealtimeAlpacaAPI.Instance.SubmitTrade(new Trade()
+            {
+                quantity = 1,
+                side = TradeSide.BUY,
+                symbol = symbol
+            });
+
+            RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
+            RealtimeAlpacaAPI.Instance.TradeCompleted += TradeNotification;
+
             this.portfolio = RealtimeAlpacaAPI.Instance.GetPortfolio();
             this.strategy.Init();
+
+          
         }
 
         

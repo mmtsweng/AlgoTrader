@@ -50,6 +50,7 @@ namespace AlgoTraderDAL
             this.liveTrade = liveTrade;
             this.active = false;
             this.stopLossPrice = -1M;
+            this.dollarQuantity = 0M;
         }
     }
 }

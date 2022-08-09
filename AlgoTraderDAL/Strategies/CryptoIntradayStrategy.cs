@@ -11,6 +11,8 @@ namespace AlgoTraderDAL.Strategies
     public class CryptoIntradayStrategy : AbstractStrategy
     {
         public List<OHLC> OHLCs { get; set; }
+        public int MarubozoPercent { get; set; }
+        public int OHLCQueueSize { get; set; }
 
         /// <summary>
         /// Constructor
@@ -46,6 +48,26 @@ namespace AlgoTraderDAL.Strategies
         public override void UpdateParameters()
         {
             base.UpdateParameters();
+            int parsedVal = 0;
+
+            if (int.TryParse(this.dbParameters["MarubozoPercent"], out parsedVal))
+            {
+                this.MarubozoPercent = parsedVal;
+            }
+            else
+            {
+                this.MarubozoPercent = 95;
+            }
+
+            if (int.TryParse(this.dbParameters["OHLCQueueSize"], out parsedVal))
+            {
+                this.OHLCQueueSize = parsedVal;
+            }
+            else
+            {
+                this.OHLCQueueSize = 50;
+            }
+
         }
 
         /// <summary>
@@ -56,6 +78,11 @@ namespace AlgoTraderDAL.Strategies
         public override Trade Next(OHLC ohlc)
         {
             this.OHLCs.Add(ohlc);
+            if (this.OHLCs.Count > this.OHLCQueueSize)
+            {
+                this.OHLCs.RemoveAt(0);
+            }
+
             return base.Next(ohlc);
         }
 
@@ -66,19 +93,45 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool BuySignal()
         {
+            if (this.OHLCs.Count < 20) { return false; }
+
             IEnumerable<SuperTrendResult> trend = this.OHLCs.GetSuperTrend(10, 3);
+            IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
+
+            if (candles.Last().Match == Match.BullSignal || candles.Last().Match == Match.BullConfirmed)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+            Match lastcandleIndicator = Match.None;
+            for (int i = candles.Count()-1; i > 0; i--)
+            {
+                Match ind = candles.ElementAt(i).Match;
+                if (ind != Match.None)
+                {
+                    lastcandleIndicator = ind;
+                    break;
+                }
+            }
+
             if (trend != null && trend.LastOrDefault().SuperTrend != null)
             {
                 int idx = trend.Count();
-                if (trend.ElementAt(idx - 2).UpperBand == null)
+                if (trend.ElementAt(idx - 2).UpperBand != null ) 
                 {
-                    if (trend.ElementAt(idx - 1).LowerBand > 0)
+                    if (trend.ElementAt(idx - 1).LowerBand > 0 && lastcandleIndicator == Match.BullSignal)
                     {
                         return true;
                     }
                 }
             }
             return false;
+
+        
         }
 
         /// <summary>
@@ -88,15 +141,39 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool SellSignal()
         {
-            IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(80);
+            IEnumerable<SuperTrendResult> trend = this.OHLCs.GetSuperTrend(10, 3);
+            IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
+
+            Match lastcandleIndicator = Match.None;
+            for (int i = candles.Count()-1; i > 0; i--)
+            {
+                Match ind = candles.ElementAt(i).Match;
+                if (ind != Match.None)
+                {
+                    lastcandleIndicator = ind;
+                    break;
+                }
+            }
+
             if (candles.Last().Match == Match.BearSignal || candles.Last().Match == Match.BearConfirmed)
             {
                 return true;
             }
             else
             {
+                /*if (trend != null && trend.LastOrDefault().SuperTrend != null)
+                {
+                    int idx = trend.Count();
+                    if (trend.ElementAt(idx - 2).LowerBand != null)
+                    {
+                        if (trend.ElementAt(idx - 1).UpperBand > 0)
+                        {
+                            return true;
+                        }
+                    }
+                } */
                 return false;
-            }
+            }               
         }
 
         /// <summary>
