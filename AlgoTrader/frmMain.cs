@@ -77,5 +77,12 @@ namespace AlgoTrader
             transactions.MdiParent = this;  
             transactions.Show();
         }
+
+        private void btnErrorLog_Click(object sender, EventArgs e)
+        {
+            frmErrorLogs logs = new frmErrorLogs();
+            logs.MdiParent = this;
+            logs.Show();
+        }
     }
 }

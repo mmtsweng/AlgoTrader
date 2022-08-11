@@ -42,6 +42,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnTransactions = new System.Windows.Forms.ToolStripButton();
             this.btnLiveTrading = new System.Windows.Forms.ToolStripButton();
+            this.btnErrorLog = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -90,6 +91,7 @@
             this.btnBackfill,
             this.btnParameters,
             this.toolStripSeparator1,
+            this.btnErrorLog,
             this.btnTransactions,
             this.btnLiveTrading});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -158,6 +160,17 @@
             this.btnLiveTrading.Text = "Realtime Trading";
             this.btnLiveTrading.Click += new System.EventHandler(this.btnLiveTrading_Click);
             // 
+            // btnErrorLog
+            // 
+            this.btnErrorLog.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnErrorLog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnErrorLog.Image = global::AlgoTrader.AlgoResources.ErrorLog;
+            this.btnErrorLog.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnErrorLog.Name = "btnErrorLog";
+            this.btnErrorLog.Size = new System.Drawing.Size(23, 22);
+            this.btnErrorLog.Text = "Error Log";
+            this.btnErrorLog.Click += new System.EventHandler(this.btnErrorLog_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -193,5 +206,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnLiveTrading;
         private System.Windows.Forms.ToolStripButton btnTransactions;
+        private System.Windows.Forms.ToolStripButton btnErrorLog;
     }
 }
