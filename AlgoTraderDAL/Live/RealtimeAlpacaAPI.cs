@@ -26,11 +26,14 @@ namespace AlgoTraderDAL.Live
         public IAlpacaCryptoDataClient AlpacaCryptoDataClient { get; set; }
         private IIntervalCalendar marketCalendar { get; set; }
         private IBar lastBarReceived { get; set; }
+        public Exception tradeException { get; set; }
 
         public bool isCrypto { get; set; }
         public event EventHandler<OHLC> OHLCReceived;
         public event EventHandler<List<OHLC>> OHLCRefresh;
         public event EventHandler<AlgoTraderDAL.Trade> TradeCompleted;
+        public event EventHandler<Exception> APIException;
+
         public string symbol { get; set; }
 
         /// <summary>
@@ -98,6 +101,7 @@ namespace AlgoTraderDAL.Live
         /// <param name="trade"></param>
         public async void SubmitTrade(Trade trade)
         {
+            this.tradeException = null;
             OrderSide orderside = OrderSide.Buy;
             switch (trade.side)
             {
@@ -121,7 +125,8 @@ namespace AlgoTraderDAL.Live
             }
             catch (Exception e) // What to do if the order fails???
             {
-                Console.WriteLine(e.Message);
+                ErrorLogger.Instance.LogException("RealtimeAlpacaAPI.SubmitTrade()", e);
+                APIException?.Invoke(this, e);
             }
         }
 
@@ -152,6 +157,7 @@ namespace AlgoTraderDAL.Live
             }
             catch (Exception ex) 
             {
+                ErrorLogger.Instance.LogException("RealtimeAlpacaAPI.CloseAllPositions()", ex);
                 // No position to exit.
             }
         }
@@ -268,7 +274,7 @@ namespace AlgoTraderDAL.Live
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorLogger.Instance.LogException("RealtimeAlpacaAPI.SetupSubscriptions()", ex);
             }
 
         }

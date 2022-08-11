@@ -18,6 +18,7 @@ namespace AlgoTraderDAL.Live
         public string symbol { get; set; }
 
         public event EventHandler<Trade> TradeOccurred;
+        public event EventHandler<Exception> TradeFailure;
 
         public RealtimeStrategyExecutor()
         {
@@ -39,9 +40,13 @@ namespace AlgoTraderDAL.Live
         /// <param name="isCrypto"></param>
         public void Start(string symbol, bool isCrypto)
         {
+
             this.symbol = symbol;
             this.isCrypto = isCrypto;
+            RealtimeAlpacaAPI.Instance.Start(symbol, isCrypto);
             RealtimeAlpacaAPI.Instance.CloseAllPositions();
+
+            System.Threading.Thread.Sleep(1000); // Wait a second.
 
             //Put some cash in the account for commission fees
             RealtimeAlpacaAPI.Instance.SubmitTrade(new Trade()
@@ -53,14 +58,12 @@ namespace AlgoTraderDAL.Live
 
             RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
             RealtimeAlpacaAPI.Instance.TradeCompleted += TradeNotification;
+            RealtimeAlpacaAPI.Instance.APIException += APIExceptionNotification;
 
             this.portfolio = RealtimeAlpacaAPI.Instance.GetPortfolio();
-            this.strategy.Init();
-
-          
+            this.strategy.Init();          
         }
 
-        
         /// <summary>
         /// Stop the strategy, and reset
         /// </summary>
@@ -72,6 +75,7 @@ namespace AlgoTraderDAL.Live
 
             RealtimeAlpacaAPI.Instance.OHLCReceived -= OHLCDataReceived;
             RealtimeAlpacaAPI.Instance.TradeCompleted -= TradeNotification;
+            RealtimeAlpacaAPI.Instance.APIException -= APIExceptionNotification;
         }
 
         /// <summary>
@@ -94,6 +98,10 @@ namespace AlgoTraderDAL.Live
                     stopLossPrice = ohlc.Low,
                     symbol = symbol
                 });
+                if (RealtimeAlpacaAPI.Instance.tradeException != null)
+                {
+                    
+                }
             }
 
             if (strategy.SellSignal() && strategy.isSellable)
@@ -108,6 +116,11 @@ namespace AlgoTraderDAL.Live
             }
         }
 
+        /// <summary>
+        /// API Notified us of a trade
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="trade"></param>
         private void TradeNotification(object sender, Trade trade)
         {
             this.portfolio.UpdatePortfolio(trade, true);
@@ -120,6 +133,21 @@ namespace AlgoTraderDAL.Live
                 strategy.openPostions--;
             }
             TradeOccurred?.Invoke(this, trade);
+        }
+
+        /// <summary>
+        /// API notified us that there was an error. Log it and try restarting
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void APIExceptionNotification(object sender, Exception e)
+        {
+            ErrorLogger.Instance.LogException("RealtimeStrategyExecutor.APIExceptionNotification()", e);
+            TradeFailure?.Invoke(this, RealtimeAlpacaAPI.Instance.tradeException);
+
+            //Try restarting?
+            End(this.symbol, this.isCrypto);
+            Start(this.symbol, this.isCrypto);
         }
 
     }

@@ -86,8 +86,9 @@ namespace AlgoTraderDAL
                     entities.SaveChanges();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                ErrorLogger.Instance.LogException("Portfolio.SaveTransactionToDatabase()", ex);
             }
         }
     }

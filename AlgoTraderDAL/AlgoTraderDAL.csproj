@@ -129,6 +129,10 @@
       <DependentUpon>AlgoModels.tt</DependentUpon>
     </Compile>
     <Compile Include="BackTesting\BackTester.cs" />
+    <Compile Include="ErrorLog.cs">
+      <DependentUpon>AlgoModels.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ErrorLogger.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HistoricalLog.cs">
       <DependentUpon>AlgoModels.tt</DependentUpon>

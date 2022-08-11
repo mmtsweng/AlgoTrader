@@ -68,6 +68,15 @@ namespace AlgoTraderDAL.Strategies
                 this.OHLCQueueSize = 50;
             }
 
+            try
+            {
+                throw new Exception("Testing Exception Logging");
+            }
+            catch (Exception e)
+            {
+                ErrorLogger.Instance.LogException("CryptoIntradayStrategy.UpdateParameters", e);
+            }
+
         }
 
         /// <summary>
@@ -95,9 +104,7 @@ namespace AlgoTraderDAL.Strategies
         {
             if (this.OHLCs.Count < 20) { return false; }
 
-            IEnumerable<SuperTrendResult> trend = this.OHLCs.GetSuperTrend(10, 3);
             IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
-
             if (candles.Last().Match == Match.BullSignal || candles.Last().Match == Match.BullConfirmed)
             {
                 return true;
@@ -106,32 +113,7 @@ namespace AlgoTraderDAL.Strategies
             {
                 return false;
             }
-
-            Match lastcandleIndicator = Match.None;
-            for (int i = candles.Count()-1; i > 0; i--)
-            {
-                Match ind = candles.ElementAt(i).Match;
-                if (ind != Match.None)
-                {
-                    lastcandleIndicator = ind;
-                    break;
-                }
-            }
-
-            if (trend != null && trend.LastOrDefault().SuperTrend != null)
-            {
-                int idx = trend.Count();
-                if (trend.ElementAt(idx - 2).UpperBand != null ) 
-                {
-                    if (trend.ElementAt(idx - 1).LowerBand > 0 && lastcandleIndicator == Match.BullSignal)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-
-        
+                    
         }
 
         /// <summary>
@@ -141,19 +123,7 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool SellSignal()
         {
-            IEnumerable<SuperTrendResult> trend = this.OHLCs.GetSuperTrend(10, 3);
             IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
-
-            Match lastcandleIndicator = Match.None;
-            for (int i = candles.Count()-1; i > 0; i--)
-            {
-                Match ind = candles.ElementAt(i).Match;
-                if (ind != Match.None)
-                {
-                    lastcandleIndicator = ind;
-                    break;
-                }
-            }
 
             if (candles.Last().Match == Match.BearSignal || candles.Last().Match == Match.BearConfirmed)
             {
@@ -161,17 +131,6 @@ namespace AlgoTraderDAL.Strategies
             }
             else
             {
-                /*if (trend != null && trend.LastOrDefault().SuperTrend != null)
-                {
-                    int idx = trend.Count();
-                    if (trend.ElementAt(idx - 2).LowerBand != null)
-                    {
-                        if (trend.ElementAt(idx - 1).UpperBand > 0)
-                        {
-                            return true;
-                        }
-                    }
-                } */
                 return false;
             }               
         }

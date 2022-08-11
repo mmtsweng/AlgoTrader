@@ -338,6 +338,7 @@ namespace AlgoTraderDAL.Strategies
             }
             catch (Exception)
             {
+                //Most likely division by zero
                 results.Slope = 0;
                 results.Intercept = 0;
             }

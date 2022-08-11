@@ -15,6 +15,16 @@
           <Property Name="API_URL" Type="varchar" MaxLength="255" />
           <Property Name="PAPER_TRADING" Type="bit" />
         </EntityType>
+        <EntityType Name="ErrorLogs">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LogTime" Type="datetime" />
+          <Property Name="Message" Type="varchar" MaxLength="512" />
+          <Property Name="StackTrace" Type="varchar(max)" />
+          <Property Name="Source" Type="varchar(max)" />
+        </EntityType>
         <EntityType Name="HistoricalLog">
           <Key>
             <PropertyRef Name="Id" />
@@ -38,6 +48,8 @@
           <Property Name="Timeframe" Type="datetime" />
           <Property Name="Timespan" Type="int" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'AlgoTraderDB.dbo.HistoricalTransactions' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="HistoricalTransactions">
           <Key>
             <PropertyRef Name="Id" />
@@ -47,9 +59,9 @@
           <Property Name="type" Type="varchar" MaxLength="64" />
           <Property Name="alpacaID" Type="varchar" MaxLength="64" />
           <Property Name="symbol" Type="varchar" MaxLength="16" />
-          <Property Name="actualPrice" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="actualPrice" Type="decimal" Precision="18" Scale="2" />
           <Property Name="quantity" Type="int" />
-          <Property Name="dollarquantity" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="dollarquantity" Type="decimal" Precision="18" Scale="2" />
           <Property Name="transactionDT" Type="datetime" />
         </EntityType>
         <EntityType Name="StrategyOptions">
@@ -81,11 +93,24 @@
         </EntityType>
         <EntityContainer Name="AlgoTraderModelStoreContainer">
           <EntitySet Name="AlpacaSettings" EntityType="Self.AlpacaSettings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ErrorLogs" EntityType="Self.ErrorLogs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HistoricalLog" EntityType="Self.HistoricalLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HistoricalOHLC" EntityType="Self.HistoricalOHLC" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="HistoricalTransactions" EntityType="Self.HistoricalTransactions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StrategyOptions" EntityType="Self.StrategyOptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TDAKeys" EntityType="Self.TDAKeys" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HistoricalTransactions" EntityType="Self.HistoricalTransactions" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [HistoricalTransactions].[Id] AS [Id], 
+    [HistoricalTransactions].[side] AS [side], 
+    [HistoricalTransactions].[type] AS [type], 
+    [HistoricalTransactions].[alpacaID] AS [alpacaID], 
+    [HistoricalTransactions].[symbol] AS [symbol], 
+    [HistoricalTransactions].[actualPrice] AS [actualPrice], 
+    [HistoricalTransactions].[quantity] AS [quantity], 
+    [HistoricalTransactions].[dollarquantity] AS [dollarquantity], 
+    [HistoricalTransactions].[transactionDT] AS [transactionDT]
+    FROM [dbo].[HistoricalTransactions] AS [HistoricalTransactions]</DefiningQuery>
+          </EntitySet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -116,6 +141,7 @@
           <EntitySet Name="StrategyOptions" EntityType="AlgoTraderModel.StrategyOption" />
           <EntitySet Name="AlpacaSettings" EntityType="AlgoTraderModel.AlpacaSetting" />
           <EntitySet Name="HistoricalTransactions" EntityType="AlgoTraderModel.HistoricalTransaction" />
+          <EntitySet Name="ErrorLogs" EntityType="AlgoTraderModel.ErrorLog" />
         </EntityContainer>
         <EntityType Name="HistoricalLog">
           <Key>
@@ -168,10 +194,20 @@
           <Property Name="type" Type="String" MaxLength="64" FixedLength="false" Unicode="false" />
           <Property Name="alpacaID" Type="String" MaxLength="64" FixedLength="false" Unicode="false" />
           <Property Name="symbol" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
-          <Property Name="actualPrice" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="actualPrice" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="quantity" Type="Int32" />
-          <Property Name="dollarquantity" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="dollarquantity" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="transactionDT" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="ErrorLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LogTime" Type="DateTime" Precision="3" />
+          <Property Name="Message" Type="String" MaxLength="512" FixedLength="false" Unicode="false" />
+          <Property Name="StackTrace" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Source" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -255,6 +291,17 @@
                 <ScalarProperty Name="alpacaID" ColumnName="alpacaID" />
                 <ScalarProperty Name="type" ColumnName="type" />
                 <ScalarProperty Name="side" ColumnName="side" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ErrorLogs">
+            <EntityTypeMapping TypeName="AlgoTraderModel.ErrorLog">
+              <MappingFragment StoreEntitySet="ErrorLogs">
+                <ScalarProperty Name="Source" ColumnName="Source" />
+                <ScalarProperty Name="StackTrace" ColumnName="StackTrace" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="LogTime" ColumnName="LogTime" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

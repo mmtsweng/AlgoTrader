@@ -57,7 +57,7 @@ namespace AlgoTraderDAL
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    ErrorLogger.Instance.LogException("AlpacaAPI.Get_TickerDataAsync()", ex);
                 }
             }
             
@@ -87,7 +87,7 @@ namespace AlgoTraderDAL
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    ErrorLogger.Instance.LogException("AlpacaAPI.Get_CryptoTickerDataAsync()", ex);
                 }
             }
 

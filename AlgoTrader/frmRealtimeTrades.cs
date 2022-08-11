@@ -30,9 +30,8 @@ namespace AlgoTrader
         /// <param name="e"></param>
         private void btnTest_Click(object sender, EventArgs e)
         {
-            RealtimeAlpacaAPI.Instance.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
-            RealtimeAlpacaAPI.Instance.RequestTodayHistoricalTickerData();
             this.StrategyExecutor.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
+            RealtimeAlpacaAPI.Instance.RequestTodayHistoricalTickerData();
             UpdateAccountBalance();
 
             this.btnTest.Enabled = false;
