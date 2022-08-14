@@ -48,8 +48,6 @@
           <Property Name="Timeframe" Type="datetime" />
           <Property Name="Timespan" Type="int" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'AlgoTraderDB.dbo.HistoricalTransactions' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="HistoricalTransactions">
           <Key>
             <PropertyRef Name="Id" />
@@ -96,21 +94,9 @@ warning 6002: The table/view 'AlgoTraderDB.dbo.HistoricalTransactions' does not 
           <EntitySet Name="ErrorLogs" EntityType="Self.ErrorLogs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HistoricalLog" EntityType="Self.HistoricalLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HistoricalOHLC" EntityType="Self.HistoricalOHLC" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HistoricalTransactions" EntityType="Self.HistoricalTransactions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StrategyOptions" EntityType="Self.StrategyOptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TDAKeys" EntityType="Self.TDAKeys" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="HistoricalTransactions" EntityType="Self.HistoricalTransactions" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [HistoricalTransactions].[Id] AS [Id], 
-    [HistoricalTransactions].[side] AS [side], 
-    [HistoricalTransactions].[type] AS [type], 
-    [HistoricalTransactions].[alpacaID] AS [alpacaID], 
-    [HistoricalTransactions].[symbol] AS [symbol], 
-    [HistoricalTransactions].[actualPrice] AS [actualPrice], 
-    [HistoricalTransactions].[quantity] AS [quantity], 
-    [HistoricalTransactions].[dollarquantity] AS [dollarquantity], 
-    [HistoricalTransactions].[transactionDT] AS [transactionDT]
-    FROM [dbo].[HistoricalTransactions] AS [HistoricalTransactions]</DefiningQuery>
-          </EntitySet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->

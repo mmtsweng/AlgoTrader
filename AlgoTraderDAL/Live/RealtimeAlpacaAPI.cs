@@ -198,8 +198,9 @@ namespace AlgoTraderDAL.Live
             List<OHLC> prices = new List<OHLC>();   
             if (this.isCrypto)
             {
+                Interval<DateTime> ti = new Interval<DateTime>(DateTime.Now.ToUniversalTime().Date, DateTime.Now.ToUniversalTime());
                 var bars = await AlpacaCryptoDataClient.ListHistoricalBarsAsync(
-                    new HistoricalCryptoBarsRequest(this.symbol, BarTimeFrame.Minute, marketCalendar.Trading));
+                    new HistoricalCryptoBarsRequest(this.symbol, BarTimeFrame.Minute, ti));
                 prices = bars.Items.Select(p => new OHLC()
                 {
                     Open = p.Open,

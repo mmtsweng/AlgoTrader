@@ -68,15 +68,6 @@ namespace AlgoTraderDAL.Strategies
                 this.OHLCQueueSize = 50;
             }
 
-            try
-            {
-                throw new Exception("Testing Exception Logging");
-            }
-            catch (Exception e)
-            {
-                ErrorLogger.Instance.LogException("CryptoIntradayStrategy.UpdateParameters", e);
-            }
-
         }
 
         /// <summary>
@@ -105,7 +96,20 @@ namespace AlgoTraderDAL.Strategies
             if (this.OHLCs.Count < 20) { return false; }
 
             IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
-            if (candles.Last().Match == Match.BullSignal || candles.Last().Match == Match.BullConfirmed)
+            SlopeResult slope = null;
+            try
+            {
+                IEnumerable<VwmaResult> vwema = this.OHLCs.GetVwma(60);
+                IEnumerable<SlopeResult> slopeVals = vwema.GetSlope(12);
+                slope = slopeVals.Last();
+                if (slope.Line == null) { return false; }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            if ((slope.Slope.GetValueOrDefault() > .005) && (candles.Last().Match == Match.BullSignal || candles.Last().Match == Match.BullConfirmed))
             {
                 return true;
             }
@@ -123,8 +127,9 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool SellSignal()
         {
-            IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
+            if (this.OHLCs.Count < 20) { return false; }
 
+            IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
             if (candles.Last().Match == Match.BearSignal || candles.Last().Match == Match.BearConfirmed)
             {
                 return true;
