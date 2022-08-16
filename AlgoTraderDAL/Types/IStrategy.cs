@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AlgoTraderDAL.Indicators;
 using ScottPlot.Plottable;
 
 namespace AlgoTraderDAL.Types
@@ -23,12 +22,11 @@ namespace AlgoTraderDAL.Types
         void Init();
         void UpdateParameters();
 
-        Trade Next(OHLC ohlc);
+        Trade Next(OHLC ohlc, bool updateQueue = true);
         Trade Close(OHLC ohlc);
         bool BuySignal();
         bool SellSignal();
         Trade MakeTrade(OHLC ohlc, TradeSide side);
-        void UpdateIndicators(OHLC ohlc);
 
     }
 }

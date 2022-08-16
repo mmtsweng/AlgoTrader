@@ -10,7 +10,7 @@ namespace AlgoTrader
 {
     public partial class frmAlpacaData : Form
     {
-        private IStrategy strategy = new CryptoIntradayStrategy();
+        private IStrategy strategy = new CryptoBollingerStrategy();
         public DateTime intradateTime { get; set; }
         public frmAnalytics analyticsForm { get; set; }
         public BackTester backtest { get; set; }

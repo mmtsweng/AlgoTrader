@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Linq;
 using AlgoTraderDAL.Live;
-using AlgoTraderDAL.Indicators;
 using ScottPlot;
+using ScottPlot.Plottable;
 
 namespace AlgoTrader
 {
@@ -31,6 +31,10 @@ namespace AlgoTrader
         private void btnTest_Click(object sender, EventArgs e)
         {
             this.StrategyExecutor.Start(this.txtSymbol.Text, this.chkCrypto.Checked);
+            RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
+            RealtimeAlpacaAPI.Instance.OHLCRefresh += OHLCRefreshDataReceived;
+            this.StrategyExecutor.TradeOccurred += TradeSignal;
+
             RealtimeAlpacaAPI.Instance.RequestTodayHistoricalTickerData();
             UpdateAccountBalance();
 
@@ -79,9 +83,6 @@ namespace AlgoTrader
         private void frmRealtimeTrades_Load(object sender, EventArgs e)
         {
             RealtimeAlpacaAPI.Instance.Init();
-            RealtimeAlpacaAPI.Instance.OHLCReceived += OHLCDataReceived;
-            RealtimeAlpacaAPI.Instance.OHLCRefresh += OHLCRefreshDataReceived;
-            this.StrategyExecutor.TradeOccurred += TradeSignal;
         }
 
         /// <summary>
@@ -172,16 +173,10 @@ namespace AlgoTrader
                 vSpan.Color = Color.White;
             }
 
-            foreach(IIndicator ind in this.StrategyExecutor.strategy.Indicators)
+            foreach(IPlottable iplot in this.StrategyExecutor.strategy.Indicators)
             {
-                double[] times = ind.History.Select(x => x.DTime.ToOADate()).ToArray();
-                double[] val = ind.History.Select(x => decimal.ToDouble((decimal)x.Value)).ToArray();
-                if (times.Length > 0 && val.Length == times.Length)
-                {
-                    this.pltChart.Plot.AddScatter(times, val, Color.Orange, lineWidth: 3, markerSize: 0, lineStyle: LineStyle.Solid);
-                }
+                this.pltChart.Plot.Add(iplot);
             }
-
 
             if (buys.Length > 0)
             {

@@ -30,7 +30,7 @@ namespace AlgoTraderDAL.Live
         /// </summary>
         private void Initialize()
         {
-            this.strategy = new CryptoIntradayStrategy(true);
+            this.strategy = new CryptoBollingerStrategy(true);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace AlgoTraderDAL.Live
         /// <exception cref="NotImplementedException"></exception>
         private void OHLCDataReceived(object sender, OHLC ohlc)
         {
-            this.strategy.Next(ohlc);
+            this.strategy.Next(ohlc, true);
 
             if (strategy.BuySignal() && strategy.isBuyable)
             {

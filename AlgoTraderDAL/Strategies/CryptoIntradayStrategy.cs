@@ -10,9 +10,9 @@ namespace AlgoTraderDAL.Strategies
 {
     public class CryptoIntradayStrategy : AbstractStrategy
     {
-        public List<OHLC> OHLCs { get; set; }
+
         public int MarubozoPercent { get; set; }
-        public int OHLCQueueSize { get; set; }
+
 
         /// <summary>
         /// Constructor
@@ -33,57 +33,14 @@ namespace AlgoTraderDAL.Strategies
         }
 
         /// <summary>
-        /// Initialize Strategy
-        /// </summary>
-        public override void Init()
-        {
-            base.Init();
-
-            this.OHLCs = new List<OHLC>();
-        }
-
-        /// <summary>
         /// Method to parse the db parameters for this strategy
         /// </summary>
         public override void UpdateParameters()
         {
             base.UpdateParameters();
-            int parsedVal = 0;
 
-            if (int.TryParse(this.dbParameters["MarubozoPercent"], out parsedVal))
-            {
-                this.MarubozoPercent = parsedVal;
-            }
-            else
-            {
-                this.MarubozoPercent = 95;
-            }
-
-            if (int.TryParse(this.dbParameters["OHLCQueueSize"], out parsedVal))
-            {
-                this.OHLCQueueSize = parsedVal;
-            }
-            else
-            {
-                this.OHLCQueueSize = 50;
-            }
-
-        }
-
-        /// <summary>
-        /// Process the next Stock iteration
-        /// </summary>
-        /// <param name="ohlc"></param>
-        /// <returns></returns>
-        public override Trade Next(OHLC ohlc)
-        {
-            this.OHLCs.Add(ohlc);
-            if (this.OHLCs.Count > this.OHLCQueueSize)
-            {
-                this.OHLCs.RemoveAt(0);
-            }
-
-            return base.Next(ohlc);
+            this.MarubozoPercent = GetStrategyOption("MarubozoPercent", 95);
+            this.OHLCQueueSize = GetStrategyOption("OHLCQueueSize", 50);
         }
 
         /// <summary>
@@ -93,7 +50,7 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool BuySignal()
         {
-            if (this.OHLCs.Count < 20) { return false; }
+            if (this.OHLCs.Count < 20) { return false; } //warmup
 
             IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
             SlopeResult slope = null;
@@ -127,7 +84,8 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool SellSignal()
         {
-            if (this.OHLCs.Count < 20) { return false; }
+            if (this.OHLCs.Count < 20) { return false; } //Warmup
+
             IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
 
 
@@ -140,22 +98,5 @@ namespace AlgoTraderDAL.Strategies
                 return false;
             }               
         }
-
-        /// <summary>
-        /// Make the actual trade
-        /// </summary>
-        /// <param name="ohlc"></param>
-        /// <param name="side"></param>
-        /// <returns></returns>
-        public override Trade MakeTrade(OHLC ohlc, TradeSide side)
-        {
-            Trade trade = base.MakeTrade(ohlc, side);
-
-            trade.actualPrice = ohlc.Low;
-            trade.submittedPrice = trade.actualPrice;
-
-            return trade;
-        }
-
     }
 }

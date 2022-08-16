@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ScottPlot.Plottable;
 using AlgoTraderDAL.Types;
-using AlgoTraderDAL.Indicators;
+using ScottPlot;
 
 namespace AlgoTraderDAL.Strategies
 {
@@ -15,6 +15,8 @@ namespace AlgoTraderDAL.Strategies
         public bool isIntraday { get; set; }
         public bool isSellable { get { return openPostions > 0; } }
         public bool isBuyable { get { return openPostions < maxOpenPositions; } }
+        internal int OHLCQueueSize { get; set; }
+        internal List<AlgoTraderDAL.Types.OHLC> OHLCs { get; set; }
         public int focusRange { get; set; }
         internal bool isLiveTrading { get; set; }
         public int openPostions { get; set; }
@@ -37,7 +39,7 @@ namespace AlgoTraderDAL.Strategies
             throw new NotImplementedException();
         }
 
-        public virtual Trade Close(OHLC ohlc)
+        public virtual Trade Close(AlgoTraderDAL.Types.OHLC ohlc)
         {
             Trade trade = null;
             if (this.openPostions > 0)
@@ -53,6 +55,8 @@ namespace AlgoTraderDAL.Strategies
             this.canOpenMultiplePositons = false;
             this.openPostions = 0;
             this.analytics = new Analytics();
+            this.OHLCs = new List<AlgoTraderDAL.Types.OHLC>();
+            this.OHLCQueueSize = 200;
             GetParametersFromDatabase();
         }
 
@@ -72,7 +76,7 @@ namespace AlgoTraderDAL.Strategies
         {
         }
 
-        public virtual Trade MakeTrade(OHLC ohlc, TradeSide side)
+        public virtual Trade MakeTrade(AlgoTraderDAL.Types.OHLC ohlc, TradeSide side)
         {
             Trade trade = new Trade(false)
             {
@@ -83,12 +87,32 @@ namespace AlgoTraderDAL.Strategies
                 type = TradeType.MARKET
             };
 
+            if (!isLiveTrading)
+            {
+                trade.actualPrice = ohlc.Low;
+                trade.submittedPrice = trade.actualPrice;
+            }
 
             return trade;
         }
 
-        public virtual Trade Next(OHLC ohlc)
+        /// <summary>
+        /// Method to update the OHLC queue
+        /// </summary>
+        /// <param name="ohlc"></param>
+        internal void UpdateOHLCQueue(AlgoTraderDAL.Types.OHLC ohlc)
         {
+            this.OHLCs.Add(ohlc);
+            if (this.OHLCs.Count > this.OHLCQueueSize)
+            {
+                this.OHLCs.RemoveAt(0);
+            }
+        }
+
+        public virtual Trade Next(AlgoTraderDAL.Types.OHLC ohlc, bool updateQueue = true)
+        {
+            if (updateQueue) { UpdateOHLCQueue(ohlc); }
+
             Trade trade = new Trade();
             if (!isLiveTrading)
             {                
@@ -120,27 +144,65 @@ namespace AlgoTraderDAL.Strategies
             throw new NotImplementedException();
         }
 
+        
         /// <summary>
-        /// Method to find a particular indicator
+        /// Get Strategy Options
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="optionName"></param>
+        /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public IIndicator GetIndicatorByName(string name)
+        internal int GetStrategyOption (string optionName, int defaultValue)
         {
-            foreach (IIndicator item in this.Indicators)
+            int parsedVal = 0;
+
+            if (int.TryParse(this.dbParameters[optionName], out parsedVal))
             {
-                if (item.Name == name) { return item; }
+                return parsedVal;
             }
-            return null;
+            else
+            {
+                return defaultValue;
+            }
         }
 
-        public void UpdateIndicators(OHLC ohlc)
+        /// <summary>
+        /// Get Strategy Options
+        /// </summary>
+        /// <param name="optionName"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        internal double GetStrategyOption(string optionName, double defaultValue)
         {
-            foreach(IIndicator item in this.Indicators)
+            double parsedVal = 0;
+
+            if (double.TryParse(this.dbParameters[optionName], out parsedVal))
             {
-                item.AddDataPoint(ohlc);
+                return parsedVal;
             }
-            throw new NotImplementedException();
-        }        
+            else
+            {
+                return defaultValue;
+            }
+        }
+
+        /// <summary>
+        /// Get Strategy Options
+        /// </summary>
+        /// <param name="optionName"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        internal string GetStrategyOption(string optionName, string defaultValue)
+        {
+            string parsedVal = String.Empty;
+
+            if (this.dbParameters[optionName] != null)
+            {
+                return parsedVal;
+            }
+            else
+            {
+                return defaultValue;
+            }
+        }
     }
 }

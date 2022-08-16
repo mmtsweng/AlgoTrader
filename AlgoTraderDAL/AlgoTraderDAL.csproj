@@ -164,6 +164,7 @@
     <Compile Include="Live\RealtimeAlpacaAPI.cs" />
     <Compile Include="Live\RealtimeStrategyExecutor.cs" />
     <Compile Include="Strategies\AbstractStrategy.cs" />
+    <Compile Include="Strategies\CryptoBollingerStrategy.cs" />
     <Compile Include="Strategies\CryptoIntradayStrategy.cs" />
     <Compile Include="Strategies\RandomBuySell.cs" />
     <Compile Include="Strategies\SimpleMomentum.cs" />

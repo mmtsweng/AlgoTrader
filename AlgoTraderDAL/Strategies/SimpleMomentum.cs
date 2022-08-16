@@ -70,7 +70,7 @@ namespace AlgoTraderDAL.Strategies
         /// </summary>
         /// <param name="ohlc"></param>
         /// <returns></returns>
-        public override Trade Next(OHLC ohlc)
+        public override Trade Next(OHLC ohlc, bool updateQueue)
         {
             UpdateQueues(ohlc);
 
