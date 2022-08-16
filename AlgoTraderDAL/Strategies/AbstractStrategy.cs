@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ScottPlot.Plottable;
 using AlgoTraderDAL.Types;
 using AlgoTraderDAL.Indicators;
 
@@ -19,7 +20,7 @@ namespace AlgoTraderDAL.Strategies
         public int openPostions { get; set; }
         public Analytics analytics { get; set; }
         public virtual Dictionary<string, string> dbParameters { get; set; }
-        public virtual List<IIndicator> Indicators { get; set; }
+        public virtual List<IPlottable> Indicators { get; set; }
         public int maxOpenPositions { get; set; }
 
         public AbstractStrategy()
@@ -28,7 +29,7 @@ namespace AlgoTraderDAL.Strategies
             this.isLiveTrading = false;
             this.maxOpenPositions = 1;
             this.focusRange = 0;
-            this.Indicators = new List<IIndicator>();
+            this.Indicators = new List<IPlottable>();
         }
 
         public virtual bool BuySignal()

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlgoTraderDAL.Indicators;
+using ScottPlot.Plottable;
 
 namespace AlgoTraderDAL.Types
 {
@@ -17,7 +18,7 @@ namespace AlgoTraderDAL.Types
         int openPostions { get; set; }
         Analytics analytics { get; set; }
         Dictionary<string, string> dbParameters {get; set;}
-        List<IIndicator> Indicators { get; set; }
+        List<IPlottable> Indicators { get; set; }
 
         void Init();
         void UpdateParameters();
