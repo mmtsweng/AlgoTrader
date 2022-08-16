@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using Alpaca.Markets.Extensions;
 using Alpaca.Markets;
 using AlgoTraderDAL.Types;
 using AlgoTraderDAL.Strategies;
@@ -118,10 +117,9 @@ namespace AlgoTraderDAL.Live
             }
 
             try
-            {                
-                var order = await alpacaTradingClient.PostOrderAsync(
-                    orderside.Market(trade.symbol, (int)trade.quantity)
-                    );   
+            {
+                MarketOrder market = orderside.Market(this.symbol, (int)trade.quantity).WithDuration(TimeInForce.Gtc);
+                var order = await alpacaTradingClient.PostOrderAsync(market);   
             }
             catch (Exception e) // What to do if the order fails???
             {
@@ -151,7 +149,7 @@ namespace AlgoTraderDAL.Live
                 if (positionQuantity > 0)
                 {
                     alpacaTradingClient.PostOrderAsync(
-                        OrderSide.Sell.Market(symbol, positionQuantity))
+                        OrderSide.Sell.Market(symbol, positionQuantity).WithDuration(TimeInForce.Gtc))                        
                         .GetAwaiter().GetResult();
                 }
             }
@@ -198,9 +196,8 @@ namespace AlgoTraderDAL.Live
             List<OHLC> prices = new List<OHLC>();   
             if (this.isCrypto)
             {
-                Interval<DateTime> ti = new Interval<DateTime>(DateTime.Now.ToUniversalTime().Date, DateTime.Now.ToUniversalTime());
                 var bars = await AlpacaCryptoDataClient.ListHistoricalBarsAsync(
-                    new HistoricalCryptoBarsRequest(this.symbol, BarTimeFrame.Minute, ti));
+                    new HistoricalCryptoBarsRequest(this.symbol, DateTime.Now.ToUniversalTime().Date, DateTime.Now.ToUniversalTime(), BarTimeFrame.Minute));
                 prices = bars.Items.Select(p => new OHLC()
                 {
                     Open = p.Open,

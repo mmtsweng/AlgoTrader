@@ -100,16 +100,16 @@ namespace AlgoTraderDAL.Strategies
             try
             {
                 IEnumerable<VwmaResult> vwema = this.OHLCs.GetVwma(60);
-                IEnumerable<SlopeResult> slopeVals = vwema.GetSlope(12);
+                IEnumerable<SlopeResult> slopeVals = vwema.GetSlope(17);
                 slope = slopeVals.Last();
                 if (slope.Line == null) { return false; }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
 
-            if ((slope.Slope.GetValueOrDefault() > .005) && (candles.Last().Match == Match.BullSignal || candles.Last().Match == Match.BullConfirmed))
+            if (candles.Last().Match == Match.BullSignal || candles.Last().Match == Match.BullConfirmed)
             {
                 return true;
             }
@@ -128,8 +128,9 @@ namespace AlgoTraderDAL.Strategies
         public override bool SellSignal()
         {
             if (this.OHLCs.Count < 20) { return false; }
-
             IEnumerable<CandleResult> candles = this.OHLCs.GetMarubozu(this.MarubozoPercent);
+
+
             if (candles.Last().Match == Match.BearSignal || candles.Last().Match == Match.BearConfirmed)
             {
                 return true;
