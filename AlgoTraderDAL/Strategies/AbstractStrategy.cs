@@ -89,7 +89,16 @@ namespace AlgoTraderDAL.Strategies
 
             if (!isLiveTrading)
             {
-                trade.actualPrice = ohlc.Low;
+                if (side == TradeSide.BUY)
+                {
+                    this.openPostions++;
+                }
+                else
+                {
+                    this.openPostions--;
+                }
+
+                trade.actualPrice = ohlc.Open;
                 trade.submittedPrice = trade.actualPrice;
             }
 
@@ -112,31 +121,7 @@ namespace AlgoTraderDAL.Strategies
         public virtual Trade Next(AlgoTraderDAL.Types.OHLC ohlc, bool updateQueue = true)
         {
             if (updateQueue) { UpdateOHLCQueue(ohlc); }
-
-            Trade trade = new Trade();
-            if (!isLiveTrading)
-            {                
-                if (this.canOpenMultiplePositons || this.openPostions < this.maxOpenPositions)
-                {
-                    if (this.BuySignal())
-                    {
-                        trade = MakeTrade(ohlc, TradeSide.BUY);
-                        this.openPostions++;
-                        return trade;
-                    }
-                }
-
-                if (this.openPostions > 0)
-                {
-                    if (this.SellSignal())
-                    {
-                        trade = MakeTrade(ohlc, TradeSide.SELL);
-                        this.openPostions--;
-                    }
-                }
-            }
-
-            return trade;
+            return new Trade();
         }
 
         public virtual bool SellSignal()

@@ -107,13 +107,16 @@ namespace AlgoTrader
 
             this.pltResults.Plot.Clear();
             var plt = new ScottPlot.Plot(800, 600);
-            //if (!backtest.strategy.isIntraday)
-            //{
             var cplot = this.pltResults.Plot.AddCandlesticks(prices);
             cplot.ColorUp = Color.LightGreen;
             cplot.ColorDown = Color.LightPink;
             cplot.WickColor = Color.DarkGray;
-            //}
+
+            /*foreach (ScottPlot.Plottable.IPlottable plot in backtest.strategy.Indicators)
+            {
+                this.pltResults.Plot.Add(plot);
+            }*/
+
             if (buys.Length > 0)
             {
                 this.pltResults.Plot.AddScatterPoints(buytimes, buys, Color.DarkBlue, markerShape: ScottPlot.MarkerShape.filledCircle, markerSize: 5);

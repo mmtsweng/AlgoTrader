@@ -187,6 +187,9 @@ namespace AlgoTrader
                 this.pltChart.Plot.AddScatterPoints(saletimes, sales, Color.DarkRed, markerShape: ScottPlot.MarkerShape.filledTriangleDown, markerSize: 10);
             }
             var cplot = this.pltChart.Plot.AddCandlesticks(prices);
+            cplot.ColorUp = Color.LightGreen;
+            cplot.ColorDown = Color.LightPink;
+            cplot.WickColor = Color.DarkGray;
             this.pltChart.Plot.XAxis.DateTimeFormat(true);
             this.pltChart.Refresh();
         }

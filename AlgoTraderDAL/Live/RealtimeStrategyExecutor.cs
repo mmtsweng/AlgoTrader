@@ -87,7 +87,7 @@ namespace AlgoTraderDAL.Live
         private void OHLCDataReceived(object sender, OHLC ohlc)
         {
             this.strategy.Next(ohlc, true);
-
+            
             if (strategy.BuySignal() && strategy.isBuyable)
             {
                 RealtimeAlpacaAPI.Instance.SubmitTrade(new Trade()
@@ -98,13 +98,8 @@ namespace AlgoTraderDAL.Live
                     stopLossPrice = ohlc.Low,
                     symbol = symbol
                 });
-                if (RealtimeAlpacaAPI.Instance.tradeException != null)
-                {
-                    
-                }
             }
-
-            if (strategy.SellSignal() && strategy.isSellable)
+            else if (strategy.SellSignal() && strategy.isSellable)
             {
                 RealtimeAlpacaAPI.Instance.SubmitTrade(new Trade()
                 {

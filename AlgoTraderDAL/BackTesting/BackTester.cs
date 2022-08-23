@@ -72,6 +72,8 @@ namespace AlgoTraderDAL.BackTesting
             this.analytics.startDateTime = (historicalOHLC.OrderByDescending(t => t.Timeframe).LastOrDefault()).Timeframe;
             this.analytics.endDateTime = (historicalOHLC.OrderByDescending(t => t.Timeframe).FirstOrDefault()).Timeframe;
 
+            Trade nextTrade = null;
+
             foreach (OHLC ohlc in this.historicalOHLC)
             {
                 if (trackingDay.Timeframe.Date < ohlc.Timeframe.Date)
@@ -79,7 +81,31 @@ namespace AlgoTraderDAL.BackTesting
                     closingTrade = strategy.Close(this.historicalOHLC[this.historicalOHLC.Count - 1]);
                     if (closingTrade != null) { this.portfolio.UpdatePortfolio(closingTrade, false); }
                 }
-                this.portfolio.UpdatePortfolio(strategy.Next(ohlc), false);
+
+                if (nextTrade != null)
+                {
+                    this.portfolio.UpdatePortfolio(strategy.MakeTrade(ohlc, nextTrade.side), false);
+                    nextTrade = null;
+                }
+
+                strategy.Next(ohlc);
+
+                Trade trade = new Trade();
+                if (strategy.canOpenMultiplePositons || strategy.openPostions < strategy.maxOpenPositions)
+                {
+                    if (strategy.BuySignal())
+                    {
+                        nextTrade = strategy.MakeTrade(ohlc, TradeSide.BUY);
+                    }
+                }
+                else if (strategy.openPostions > 0)
+                {
+                    if (strategy.SellSignal())
+                    {
+                        nextTrade = strategy.MakeTrade(ohlc, TradeSide.SELL);
+                    }
+                }
+
                 trackingDay = ohlc;
             }
             closingTrade = strategy.Close(this.historicalOHLC[this.historicalOHLC.Count - 1]);

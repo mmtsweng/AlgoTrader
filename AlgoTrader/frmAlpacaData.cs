@@ -60,6 +60,7 @@ namespace AlgoTrader
         /// <param name="e"></param>
         private void btnLoad_Click(object sender, EventArgs e)
         {
+            this.analyticsLogIdx = 0;
             if (this.strategy.isIntraday)
             {
                 this.intradateTime = this.dtFrom.Value;

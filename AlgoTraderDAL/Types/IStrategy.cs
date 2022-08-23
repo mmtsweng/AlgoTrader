@@ -15,6 +15,7 @@ namespace AlgoTraderDAL.Types
         bool isSellable { get; }
         int focusRange { get; set; }
         int openPostions { get; set; }
+        int maxOpenPositions { get; set; }
         Analytics analytics { get; set; }
         Dictionary<string, string> dbParameters {get; set;}
         List<IPlottable> Indicators { get; set; }

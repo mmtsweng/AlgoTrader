@@ -98,9 +98,14 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool BuySignal()
         {
-            if (this.CurrentBollinger == null) { return false; }
+            if (this.CurrentBollinger == null || this.CurrentBollinger.PercentB == null) { return false; }
             OHLC ohlc = this.OHLCs.Last();
-            if ((double)ohlc.Close > this.CurrentBollinger.UpperBand.GetValueOrDefault()) 
+
+            SlopeResult slope = this.OHLCs.GetEma(4).GetSlope(4).Last();
+            if (slope.Slope != null && slope.Slope.GetValueOrDefault() < -0.05) 
+            { return false; }
+
+            if ((double)ohlc.Low < this.CurrentBollinger.LowerBand.GetValueOrDefault())
             { return true; }
             return false;
         }
@@ -111,9 +116,14 @@ namespace AlgoTraderDAL.Strategies
         /// <returns></returns>
         public override bool SellSignal()
         {
-            if (this.CurrentBollinger == null) { return false; }
+            if (this.CurrentBollinger == null || this.CurrentBollinger.PercentB == null) { return false; }
             OHLC ohlc = this.OHLCs.Last();
-            if ((double)ohlc.Low < this.CurrentBollinger.LowerBand.GetValueOrDefault()) 
+
+            SlopeResult slope = this.OHLCs.GetEma(4).GetSlope(4).Last();
+            if (slope.Slope != null && slope.Slope.GetValueOrDefault() < -0.05) 
+            { return true; }
+
+            if ((double)ohlc.High > this.CurrentBollinger.UpperBand.GetValueOrDefault())
             { return true; }
             return false;   
         }

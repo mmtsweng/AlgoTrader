@@ -108,10 +108,11 @@ namespace AlgoTraderDAL.Types
                         }
                     }
 
-                    decimal buytradecost = runningPortfolio[buytradeidx].quantity * runningPortfolio[buytradeidx].actualPrice;
 
                     if (buytradeidx != -1)
                     {
+                        decimal buytradecost = runningPortfolio[buytradeidx].quantity * runningPortfolio[buytradeidx].actualPrice;
+
                         this.finalCapital += buytradecost;
                         if (tradecost > buytradecost)
                         {
