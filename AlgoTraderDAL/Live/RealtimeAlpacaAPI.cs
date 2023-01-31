@@ -118,7 +118,16 @@ namespace AlgoTraderDAL.Live
 
             try
             {
-                MarketOrder market = orderside.Market(this.symbol, (int)trade.quantity).WithDuration(TimeInForce.Gtc);
+                OrderQuantity quantity;
+                if (trade.dollarQuantity > 0)
+                {
+                    quantity = OrderQuantity.Notional(trade.dollarQuantity);
+                }
+                else
+                {
+                    quantity = OrderQuantity.FromInt64((int)trade.quantity);
+                }
+                MarketOrder market = orderside.Market(this.symbol, quantity).WithDuration(TimeInForce.Day);
                 var order = await alpacaTradingClient.PostOrderAsync(market);   
             }
             catch (Exception e) // What to do if the order fails???
@@ -145,11 +154,11 @@ namespace AlgoTraderDAL.Live
         {
             try
             {
-                var positionQuantity = alpacaTradingClient.GetPositionAsync(symbol).GetAwaiter().GetResult().IntegerQuantity;
-                if (positionQuantity > 0)
+                IPosition position = alpacaTradingClient.GetPositionAsync(symbol).GetAwaiter().GetResult();
+                if (position.IntegerQuantity > 0)
                 {
                     alpacaTradingClient.PostOrderAsync(
-                        OrderSide.Sell.Market(symbol, positionQuantity).WithDuration(TimeInForce.Gtc))                        
+                        OrderSide.Sell.Market(symbol, OrderQuantity.Fractional(position.Quantity)).WithDuration(TimeInForce.Gtc))                        
                         .GetAwaiter().GetResult();
                 }
             }
@@ -197,7 +206,7 @@ namespace AlgoTraderDAL.Live
             if (this.isCrypto)
             {
                 var bars = await AlpacaCryptoDataClient.ListHistoricalBarsAsync(
-                    new HistoricalCryptoBarsRequest(this.symbol, DateTime.Now.ToUniversalTime().Date, DateTime.Now.ToUniversalTime(), BarTimeFrame.Minute));
+                    new HistoricalCryptoBarsRequest(this.symbol, DateTime.Now.ToUniversalTime().Date, DateTime.Now.ToUniversalTime(), BarTimeFrame.Minute).WithPageSize(9000).WithExchanges(CryptoExchange.Ftx));
                 prices = bars.Items.Select(p => new OHLC()
                 {
                     Open = p.Open,
@@ -304,6 +313,7 @@ namespace AlgoTraderDAL.Live
                     TradeId = trade.Order.OrderId,
                     symbol = trade.Order.Symbol,
                     quantity = trade.Order.Quantity.GetValueOrDefault(),
+                    dollarQuantity = trade.Order.Notional.GetValueOrDefault(),
                     transactionDateTime = trade.TimestampUtc.GetValueOrDefault().ToLocalTime(),
                     actualPrice = trade.Order.AverageFillPrice.GetValueOrDefault(),
                     side = tradeside

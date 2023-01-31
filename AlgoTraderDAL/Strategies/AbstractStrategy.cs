@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using ScottPlot.Plottable;
 using AlgoTraderDAL.Types;
 using ScottPlot;
+using Polly.Fallback;
+using System.Windows.Forms;
 
 namespace AlgoTraderDAL.Strategies
 {
@@ -24,6 +26,7 @@ namespace AlgoTraderDAL.Strategies
         public virtual Dictionary<string, string> dbParameters { get; set; }
         public virtual List<IPlottable> Indicators { get; set; }
         public int maxOpenPositions { get; set; }
+        private Trade lastBuy { get; set; }
 
         public AbstractStrategy()
         {
@@ -46,6 +49,7 @@ namespace AlgoTraderDAL.Strategies
             {
                 trade = MakeTrade(ohlc, TradeSide.SELL);
                 this.openPostions--;
+                this.lastBuy = null;
             }
             return trade;
         }
@@ -57,6 +61,7 @@ namespace AlgoTraderDAL.Strategies
             this.analytics = new Analytics();
             this.OHLCs = new List<AlgoTraderDAL.Types.OHLC>();
             this.OHLCQueueSize = 200;
+            this.lastBuy = null;
             GetParametersFromDatabase();
         }
 
@@ -82,24 +87,13 @@ namespace AlgoTraderDAL.Strategies
             {
                 side = side,
                 symbol = ohlc.Symbol,
-                quantity = 1,
                 transactionDateTime = ohlc.Timeframe,
                 type = TradeType.MARKET
             };
 
-            if (!isLiveTrading)
+            if (!isLiveTrading) //Backtesting Calculation
             {
-                if (side == TradeSide.BUY)
-                {
-                    this.openPostions++;
-                }
-                else
-                {
-                    this.openPostions--;
-                }
-
-                trade.actualPrice = ohlc.Open;
-                trade.submittedPrice = trade.actualPrice;
+                trade = BacktestTradeCalculations(ohlc, side, trade);
             }
 
             return trade;
@@ -189,5 +183,51 @@ namespace AlgoTraderDAL.Strategies
                 return defaultValue;
             }
         }
+
+
+        /// <summary>
+        /// Method to calculate values of a trade during a backtest
+        /// </summary>
+        /// <param name="ohlc"></param>
+        /// <param name="side"></param>
+        /// <param name="trade"></param>
+        private Trade BacktestTradeCalculations(Types.OHLC ohlc, TradeSide side, Trade trade)
+        {
+            if (side == TradeSide.BUY)
+            {
+                if (this.openPostions >= this.maxOpenPositions) { return null; }
+                this.openPostions++;
+                if (trade.dollarQuantity > 0)
+                {
+                    trade.quantity = (trade.dollarQuantity / ohlc.Open);
+                    trade.actualPrice = trade.dollarQuantity;
+                }
+                else
+                {
+                    trade.actualPrice = ohlc.Open;
+                }
+                this.lastBuy = trade;
+            }
+            else //TradeSide.SELL
+            {
+                if (this.openPostions <= 0) { return null; }
+                this.openPostions--;
+                if (trade.dollarQuantity > 0 && lastBuy != null)
+                {
+                    trade.quantity = lastBuy.quantity;  
+                    trade.actualPrice = ohlc.Open * lastBuy.quantity;
+                }
+                else
+                {
+                    trade.actualPrice = ohlc.Open;
+                }
+                lastBuy = null;
+            }
+
+            trade.submittedPrice = trade.actualPrice;
+
+            return trade;
+        }
+
     }
 }

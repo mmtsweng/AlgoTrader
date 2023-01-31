@@ -84,28 +84,35 @@ namespace AlgoTraderDAL.BackTesting
 
                 if (nextTrade != null)
                 {
-                    this.portfolio.UpdatePortfolio(strategy.MakeTrade(ohlc, nextTrade.side), false);
-                    nextTrade = null;
+                    Trade processedTrade = strategy.MakeTrade(ohlc, nextTrade.side);
+                    if (processedTrade != null)
+                    {
+                        this.portfolio.UpdatePortfolio(processedTrade, false);
+                        nextTrade = null;
+                    }
                 }
 
                 strategy.Next(ohlc);
 
                 Trade trade = new Trade();
-                if (strategy.canOpenMultiplePositons || strategy.openPostions < strategy.maxOpenPositions)
+                if (strategy.BuySignal())
                 {
-                    if (strategy.BuySignal())
+                    trade = strategy.MakeTrade(ohlc, TradeSide.BUY);
+                    if (trade != null)
                     {
-                        nextTrade = strategy.MakeTrade(ohlc, TradeSide.BUY);
+                        nextTrade = trade;
                     }
                 }
-                else if (strategy.openPostions > 0)
+                
+                if (strategy.SellSignal())
                 {
-                    if (strategy.SellSignal())
+                    trade = strategy.MakeTrade(ohlc, TradeSide.SELL);
+                    if (trade != null)
                     {
-                        nextTrade = strategy.MakeTrade(ohlc, TradeSide.SELL);
+                        nextTrade = trade;
                     }
                 }
-
+            
                 trackingDay = ohlc;
             }
             closingTrade = strategy.Close(this.historicalOHLC[this.historicalOHLC.Count - 1]);

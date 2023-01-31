@@ -51,7 +51,6 @@ namespace AlgoTraderDAL.Live
             //Put some cash in the account for commission fees
             RealtimeAlpacaAPI.Instance.SubmitTrade(new Trade()
             {
-                quantity = 1,
                 side = TradeSide.BUY,
                 symbol = symbol
             });
@@ -92,7 +91,6 @@ namespace AlgoTraderDAL.Live
             {
                 RealtimeAlpacaAPI.Instance.SubmitTrade(new Trade()
                 {
-                    quantity = 1,
                     submittedPrice = Decimal.Multiply(ohlc.Open, 3M),
                     side = TradeSide.BUY,
                     stopLossPrice = ohlc.Low,
@@ -103,7 +101,6 @@ namespace AlgoTraderDAL.Live
             {
                 RealtimeAlpacaAPI.Instance.SubmitTrade(new Trade()
                 {
-                    quantity = 1,
                     submittedPrice = ohlc.Open,
                     side = TradeSide.SELL,
                     symbol = symbol

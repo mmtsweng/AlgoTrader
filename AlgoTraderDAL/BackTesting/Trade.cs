@@ -51,6 +51,9 @@ namespace AlgoTraderDAL
             this.active = false;
             this.stopLossPrice = -1M;
             this.dollarQuantity = 0M;
+
+            this.quantity = 0;
+            this.dollarQuantity = 50;
         }
     }
 }

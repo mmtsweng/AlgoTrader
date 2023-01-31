@@ -75,7 +75,7 @@ namespace AlgoTraderDAL
                 var client = Environments.Paper.GetAlpacaCryptoDataClient(new SecretKey(this.setting.API_KEY, this.setting.API_SECRET));
                 try
                 {
-                    var req = new HistoricalCryptoBarsRequest(ticker, DateTime.SpecifyKind(from, DateTimeKind.Utc), DateTime.SpecifyKind(to, DateTimeKind.Utc), btf).WithPageSize(9000).WithExchanges(CryptoExchange.Cbse);
+                    var req = new HistoricalCryptoBarsRequest(ticker, DateTime.SpecifyKind(from, DateTimeKind.Utc), DateTime.SpecifyKind(to, DateTimeKind.Utc), btf).WithPageSize(9000).WithExchanges(CryptoExchange.Ftx);
                     var page = await client.ListHistoricalBarsAsync(req).ConfigureAwait(false);
                     foreach (var bar in page.Items)
                     {
